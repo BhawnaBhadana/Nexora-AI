@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const User = require("../models/user");
 
 exports.updateAnalytics = async (req, res) => {
   try {
