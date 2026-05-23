@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nexora AI — Study Smarter</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="brand-icon"><i class="ti ti-brain"></i></div>
+      <span class="brand-name">Nexora AI</span>
+    </div>
+    <h1 class="auth-headline">Study smarter<br/>with AI by your side</h1>
+    <p class="auth-sub">Doubt solving, AI notes, mock tests, resume builder, career guide and analytics — all in one place for Indian students.</p>
+    <div class="auth-features">
+      <div class="af"><i class="ti ti-message-question"></i> Instant doubt solving</div>
+      <div class="af"><i class="ti ti-notebook"></i> AI-generated notes</div>
+      <div class="af"><i class="ti ti-code"></i> Code helper</div>
+      <div class="af"><i class="ti ti-clipboard-list"></i> Mock test generator</div>
+      <div class="af"><i class="ti ti-camera"></i> Image question solver</div>
+      <div class="af"><i class="ti ti-calendar"></i> Study planner</div>
+      <div class="af"><i class="ti ti-file-cv"></i> AI resume builder</div>
+      <div class="af"><i class="ti ti-briefcase"></i> Career guide chatbot</div>
+      <div class="af"><i class="ti ti-chart-bar"></i> Analytics dashboard</div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-box">
+      <div class="auth-tabs">
+        <button class="atab active" onclick="switchTab('login')">Login</button>
+        <button class="atab" onclick="switchTab('register')">Register</button>
+      </div>
+      <div id="login-form">
+        <div class="form-group">
+          <label>Email</label>
+          <div class="input-wrap"><i class="ti ti-mail"></i><input type="email" id="login-email" placeholder="your@email.com"/></div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-wrap"><i class="ti ti-lock"></i><input type="password" id="login-password" placeholder="Enter password"/></div>
+        </div>
+        <button class="btn-primary" onclick="handleLogin()">Login to Nexora</button>
+        <p class="form-hint">Don't have an account? <a onclick="switchTab('register')">Register free</a></p>
+      </div>
+      <div id="register-form" style="display:none">
+        <div class="form-group">
+          <label>Full name</label>
+          <div class="input-wrap"><i class="ti ti-user"></i><input type="text" id="reg-name" placeholder="Your name"/></div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <div class="input-wrap"><i class="ti ti-mail"></i><input type="email" id="reg-email" placeholder="your@email.com"/></div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-wrap"><i class="ti ti-lock"></i><input type="password" id="reg-password" placeholder="Create password"/></div>
+        </div>
+        <button class="btn-primary" onclick="handleRegister()">Create free account</button>
+        <p class="form-hint">Already have an account? <a onclick="switchTab('login')">Login</a></p>
+      </div>
+      <div id="auth-msg" class="auth-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none">
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-brain"></i></div>
+      <div>
+        <div class="logo-text">Nexora AI</div>
+        <div class="logo-sub">STUDY SMARTER</div>
+      </div>
+    </div>
+    <div class="nav-section">STUDY</div>
+    <div class="nav-item active" onclick="switchPanel(this,'home')"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></div>
+    <div class="nav-item" onclick="switchPanel(this,'doubt')"><i class="ti ti-message-question"></i><span>Doubt solver</span></div>
+    <div class="nav-item" onclick="switchPanel(this,'notes')"><i class="ti ti-notebook"></i><span>AI notes</span></div>
+    <div class="nav-item" onclick="switchPanel(this,'code')"><i class="ti ti-code"></i><span>Code helper</span></div>
+    <div class="nav-item" onclick="switchPanel(this,'test')"><i class="ti ti-clipboard-list"></i><span>Mock tests</span></div>
+    <div class="nav-item" onclick="switchPanel(this,'image')"><i class="ti ti-camera"></i><span>Image solver</span></div>
+    <div class="nav-item" onclick="switchPanel(this,'planner')"><i class="ti ti-calendar"></i><span>Study planner</span></div>
+    <div class="nav-section">CAREER</div>
+    <div class="nav-item" onclick="switchPanel(this,'resume')"><i class="ti ti-file-cv"></i><span>Resume builder</span></div>
+    <div class="nav-item" onclick="switchPanel(this,'career')"><i class="ti ti-briefcase"></i><span>Career guide</span></div>
+    <div class="nav-section">INSIGHTS</div>
+    <div class="nav-item" onclick="switchPanel(this,'analytics')"><i class="ti ti-chart-bar"></i><span>Analytics</span></div>
+    <div class="nav-section" style="margin-top:auto">ACCOUNT</div>
+    <div class="nav-item" onclick="handleLogout()"><i class="ti ti-logout"></i><span>Logout</span></div>
+    <div class="sidebar-footer">
+      <div class="sf-avatar" id="sf-avatar">B</div>
+      <div>
+        <div class="sf-name" id="sf-name">Student</div>
+        <div class="sf-plan">Free plan</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title" id="page-title">Dashboard</div>
+        <div class="page-sub" id="page-sub">What will you learn today?</div>
+      </div>
+      <div class="topbar-right">
+        <div class="streak-badge"><i class="ti ti-flame"></i><span id="top-streak">0</span> day streak</div>
+        <div class="user-circle" id="user-circle">B</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- HOME -->
+      <div class="panel active" id="panel-home">
+        <div class="stat-row">
+          <div class="stat-card"><div class="stat-label"><i class="ti ti-message-question" style="color:#7F77DD"></i> Doubts solved</div><div class="stat-val" id="stat-doubts">0</div></div>
+          <div class="stat-card"><div class="stat-label"><i class="ti ti-notebook" style="color:#1D9E75"></i> Notes created</div><div class="stat-val" id="stat-notes">0</div></div>
+          <div class="stat-card"><div class="stat-label"><i class="ti ti-clipboard-list" style="color:#D85A30"></i> Tests taken</div><div class="stat-val" id="stat-tests">0</div></div>
+          <div class="stat-card"><div class="stat-label"><i class="ti ti-target" style="color:#EF9F27"></i> Accuracy</div><div class="stat-val" id="stat-accuracy">0%</div></div>
+        </div>
+        <div class="section-label">QUICK START</div>
+        <div class="feat-grid">
+          <div class="feat-card purple" onclick="switchPanel(document.querySelectorAll('.nav-item')[1],'doubt')">
+            <div class="feat-accent purple-acc"></div>
+            <div class="feat-icon purple-icon"><i class="ti ti-message-question"></i></div>
+            <div class="feat-title">Ask a doubt</div>
+            <div class="feat-desc">Instant AI answers for any subject</div>
+            <div class="feat-badge purple-badge">AI powered</div>
+          </div>
+          <div class="feat-card teal" onclick="switchPanel(document.querySelectorAll('.nav-item')[2],'notes')">
+            <div class="feat-accent teal-acc"></div>
+            <div class="feat-icon teal-icon"><i class="ti ti-notebook"></i></div>
+            <div class="feat-title">Generate notes</div>
+            <div class="feat-desc">Clean structured notes on any topic</div>
+            <div class="feat-badge teal-badge">Save as PDF</div>
+          </div>
+          <div class="feat-card amber" onclick="switchPanel(document.querySelectorAll('.nav-item')[3],'code')">
+            <div class="feat-accent amber-acc"></div>
+            <div class="feat-icon amber-icon"><i class="ti ti-code"></i></div>
+            <div class="feat-title">Code helper</div>
+            <div class="feat-desc">Write, debug and understand code</div>
+            <div class="feat-badge amber-badge">Multi-language</div>
+          </div>
+          <div class="feat-card coral" onclick="switchPanel(document.querySelectorAll('.nav-item')[4],'test')">
+            <div class="feat-accent coral-acc"></div>
+            <div class="feat-icon coral-icon"><i class="ti ti-clipboard-list"></i></div>
+            <div class="feat-title">Mock tests</div>
+            <div class="feat-desc">Practice questions generated by AI</div>
+            <div class="feat-badge coral-badge">With answers</div>
+          </div>
+          <div class="feat-card blue" onclick="switchPanel(document.querySelectorAll('.nav-item')[5],'image')">
+            <div class="feat-accent blue-acc"></div>
+            <div class="feat-icon blue-icon"><i class="ti ti-camera"></i></div>
+            <div class="feat-title">Image solver</div>
+            <div class="feat-desc">Upload question photo — get solution</div>
+            <div class="feat-badge blue-badge">Vision AI</div>
+          </div>
+          <div class="feat-card green" onclick="switchPanel(document.querySelectorAll('.nav-item')[6],'planner')">
+            <div class="feat-accent green-acc"></div>
+            <div class="feat-icon green-icon"><i class="ti ti-calendar"></i></div>
+            <div class="feat-title">Study planner</div>
+            <div class="feat-desc">Plan subjects and track progress</div>
+            <div class="feat-badge green-badge">Track progress</div>
+          </div>
+          <div class="feat-card pink" onclick="switchPanel(document.querySelectorAll('.nav-item')[8],'resume')">
+            <div class="feat-accent pink-acc"></div>
+            <div class="feat-icon pink-icon"><i class="ti ti-file-cv"></i></div>
+            <div class="feat-title">Resume builder</div>
+            <div class="feat-desc">AI builds your professional resume</div>
+            <div class="feat-badge pink-badge">Download PDF</div>
+          </div>
+          <div class="feat-card indigo" onclick="switchPanel(document.querySelectorAll('.nav-item')[9],'career')">
+            <div class="feat-accent indigo-acc"></div>
+            <div class="feat-icon indigo-icon"><i class="ti ti-briefcase"></i></div>
+            <div class="feat-title">Career guide</div>
+            <div class="feat-desc">AI career counsellor for Indian students</div>
+            <div class="feat-badge indigo-badge">India focused</div>
+          </div>
+          <div class="feat-card stat" onclick="switchPanel(document.querySelectorAll('.nav-item')[11],'analytics')">
+            <div class="feat-accent stat-acc"></div>
+            <div class="feat-icon stat-icon"><i class="ti ti-chart-bar"></i></div>
+            <div class="feat-title">Analytics</div>
+            <div class="feat-desc">Track your study habits and progress</div>
+            <div class="feat-badge stat-badge">Charts + graphs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOUBT -->
+      <div class="panel" id="panel-doubt">
+        <div class="chat-area" id="chat-messages">
+          <div class="bubble-wrap">
+            <div class="bub-avatar ai-av"><i class="ti ti-brain"></i></div>
+            <div class="bubble ai-bubble">Hello! I am your Nexora AI study assistant. Ask me any doubt — Maths, Science, Coding, anything!</div>
+          </div>
+        </div>
+        <div class="input-row">
+          <input type="text" id="doubt-input" class="chat-input" placeholder="Type your doubt here..." onkeydown="if(event.key==='Enter') sendDoubt()"/>
+          <button class="send-btn" onclick="sendDoubt()"><i class="ti ti-send"></i></button>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="panel" id="panel-notes">
+        <div class="topic-row">
+          <input type="text" id="notes-topic" class="topic-input" placeholder="Enter topic — e.g. DBMS, Operating System, Python..."/>
+          <button class="gen-btn teal-btn" onclick="generateNotes()"><i class="ti ti-sparkles"></i> Generate</button>
+        </div>
+        <div class="notes-output" id="notes-output">
+          <div class="empty-state"><i class="ti ti-notebook"></i><p>Enter a topic above to generate notes</p></div>
+        </div>
+        <div class="notes-actions" id="notes-actions" style="display:none">
+          <button class="action-btn" onclick="copyNotes()"><i class="ti ti-copy"></i> Copy</button>
+          <button class="action-btn" onclick="downloadNotes()"><i class="ti ti-download"></i> Save</button>
+        </div>
+      </div>
+
+      <!-- CODE -->
+      <div class="panel" id="panel-code">
+        <div class="topic-row">
+          <input type="text" id="code-input" class="topic-input" placeholder="Describe what to code or paste your code..." onkeydown="if(event.key==='Enter') runCodeHelper()"/>
+          <button class="gen-btn amber-btn" onclick="runCodeHelper()"><i class="ti ti-player-play"></i> Run AI</button>
+        </div>
+        <div class="code-output" id="code-output">
+          <div class="empty-state"><i class="ti ti-code"></i><p>Describe your code problem above</p></div>
+        </div>
+      </div>
+
+      <!-- TEST -->
+      <div class="panel" id="panel-test">
+        <div class="topic-row">
+          <input type="text" id="test-topic" class="topic-input" placeholder="Topic e.g. DBMS, Networks, Python..."/>
+          <select id="test-difficulty" class="diff-select">
+            <option>Easy</option><option selected>Medium</option><option>Hard</option>
+          </select>
+          <button class="gen-btn coral-btn" onclick="generateTest()"><i class="ti ti-sparkles"></i> Generate</button>
+        </div>
+        <div class="test-output" id="test-output">
+          <div class="empty-state"><i class="ti ti-clipboard-list"></i><p>Enter a topic above to generate mock test</p></div>
+        </div>
+      </div>
+
+      <!-- IMAGE SOLVER -->
+      <div class="panel" id="panel-image">
+        <div class="image-upload-area" id="image-upload-area" onclick="document.getElementById('image-file-input').click()">
+          <i class="ti ti-cloud-upload"></i>
+          <p>Click to upload image or drag and drop</p>
+          <span>Supports JPG, PNG — max 5MB</span>
+          <input type="file" id="image-file-input" accept="image/*" style="display:none" onchange="handleImageUpload(event)"/>
+        </div>
+        <div id="image-preview-wrap" style="display:none;gap:12px;align-items:flex-start;flex-wrap:wrap;flex-shrink:0">
+          <img id="image-preview" src="" alt="uploaded question" style="max-height:180px;border-radius:12px;border:1px solid var(--border)"/>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="gen-btn blue-btn" onclick="solveImage()"><i class="ti ti-brain"></i> Solve this question</button>
+            <button class="action-btn" onclick="resetImage()"><i class="ti ti-refresh"></i> Upload new image</button>
+          </div>
+        </div>
+        <div class="notes-output" id="image-output">
+          <div class="empty-state"><i class="ti ti-camera"></i><p>Upload an image of your question above</p></div>
+        </div>
+      </div>
+
+      <!-- STUDY PLANNER -->
+      <div class="panel" id="panel-planner">
+        <div class="planner-create">
+          <div class="planner-form-title"><i class="ti ti-calendar-plus"></i> Create new study plan</div>
+          <div class="planner-create-row">
+            <input type="text" id="plan-subject" class="topic-input" placeholder="Subject e.g. Mathematics, DBMS, Python..."/>
+            <input type="date" id="plan-examdate" class="topic-input" style="max-width:180px"/>
+            <button class="gen-btn teal-btn" onclick="generatePlanWithAI()"><i class="ti ti-sparkles"></i> AI Plan</button>
+          </div>
+        </div>
+        <div class="plans-list" id="plans-list">
+          <div class="empty-state"><i class="ti ti-calendar"></i><p>Create your first study plan above</p></div>
+        </div>
+      </div>
+
+      <!-- RESUME BUILDER -->
+      <div class="panel" id="panel-resume">
+        <div class="resume-layout">
+          <div class="resume-form">
+            <div class="resume-form-title"><i class="ti ti-file-cv"></i> Your details</div>
+            <div class="rf-section">Personal info</div>
+            <input type="text" id="r-name" class="r-input" placeholder="Full name *"/>
+            <input type="text" id="r-email" class="r-input" placeholder="Email *"/>
+            <input type="text" id="r-phone" class="r-input" placeholder="Phone number"/>
+            <input type="text" id="r-location" class="r-input" placeholder="City, State"/>
+            <input type="text" id="r-linkedin" class="r-input" placeholder="LinkedIn URL (optional)"/>
+            <input type="text" id="r-github" class="r-input" placeholder="GitHub URL (optional)"/>
+            <div class="rf-section">Education</div>
+            <input type="text" id="r-college" class="r-input" placeholder="College name *"/>
+            <input type="text" id="r-degree" class="r-input" placeholder="Degree e.g. BSCA, BCA, B.Tech"/>
+            <input type="text" id="r-year" class="r-input" placeholder="Year e.g. 2022–2026"/>
+            <input type="text" id="r-cgpa" class="r-input" placeholder="CGPA / Percentage"/>
+            <div class="rf-section">Skills</div>
+            <textarea id="r-skills" class="r-textarea" placeholder="Python, JavaScript, React, MongoDB, SQL, Git..."></textarea>
+            <div class="rf-section">Projects</div>
+            <textarea id="r-projects" class="r-textarea" placeholder="Project 1: Name — description, tech used&#10;Project 2: Name — description, tech used"></textarea>
+            <div class="rf-section">Experience (optional)</div>
+            <textarea id="r-experience" class="r-textarea" placeholder="Internship or work experience..."></textarea>
+            <div class="rf-section">Achievements (optional)</div>
+            <textarea id="r-achievements" class="r-textarea" placeholder="Hackathons, certifications, awards..."></textarea>
+            <div class="rf-section">Career objective</div>
+            <textarea id="r-objective" class="r-textarea" placeholder="Brief career objective or summary..."></textarea>
+            <button class="gen-btn purple-btn" onclick="generateResume()" style="width:100%;justify-content:center;margin-top:8px">
+              <i class="ti ti-sparkles"></i> Generate resume
+            </button>
+          </div>
+          <div class="resume-preview">
+            <div class="resume-preview-topbar">
+              <span style="font-size:13px;font-weight:700;color:var(--text)">Resume preview</span>
+              <button class="action-btn" onclick="downloadResume()"><i class="ti ti-download"></i> Download PDF</button>
+            </div>
+            <div class="resume-output" id="resume-output">
+              <div class="empty-state"><i class="ti ti-file-cv"></i><p>Fill in your details and click Generate</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAREER GUIDE -->
+      <div class="panel" id="panel-career">
+        <div class="career-layout">
+          <div class="career-sidebar">
+            <div class="career-sidebar-title">QUICK TOPICS</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('What career paths are available for BCA and BSCA students in India?')"><i class="ti ti-road"></i> Career paths</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('What skills should I learn to get a good software job in India?')"><i class="ti ti-bulb"></i> Skills to learn</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('How to prepare for placements and campus interviews in India?')"><i class="ti ti-building"></i> Placement prep</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('What are the best certifications for computer science students in India?')"><i class="ti ti-certificate"></i> Certifications</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('How to get internships as a college student in India?')"><i class="ti ti-briefcase"></i> Internships</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('How to build a strong LinkedIn profile as a student in India?')"><i class="ti ti-brand-linkedin"></i> LinkedIn tips</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('What is the average salary for fresher software engineers in India in 2025?')"><i class="ti ti-coin"></i> Salary guide</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('Should I do MBA or MTech after BCA or BSCA in India?')"><i class="ti ti-school"></i> Higher studies</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('How to crack product companies and FAANG from India as a fresher?')"><i class="ti ti-trophy"></i> FAANG prep</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('How to start freelancing as a college student in India and earn money?')"><i class="ti ti-device-laptop"></i> Freelancing</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('How to crack government IT jobs like TCS, Infosys, Wipro, HCL as a fresher?')"><i class="ti ti-building-bank"></i> Service companies</div>
+            <div class="career-topic-btn" onclick="askCareerTopic('How to build a portfolio and GitHub profile that impresses recruiters?')"><i class="ti ti-brand-github"></i> Portfolio tips</div>
+          </div>
+          <div class="career-chat-wrap">
+            <div class="chat-area" id="career-messages">
+              <div class="bubble-wrap">
+                <div class="bub-avatar career-av"><i class="ti ti-briefcase"></i></div>
+                <div class="bubble ai-bubble">Hello! I am your Nexora Career Guide — an AI career counsellor built for Indian college students.<br><br>Ask me anything about jobs, salaries, skills, internships, placements, or your career after college. I will give you honest, India-specific advice!</div>
+              </div>
+            </div>
+            <div class="input-row">
+              <input type="text" id="career-input" class="chat-input" placeholder="Ask about careers, jobs, skills, salary..." onkeydown="if(event.key==='Enter') sendCareerMsg()"/>
+              <button class="send-btn" style="background:var(--indigo)" onclick="sendCareerMsg()"><i class="ti ti-send"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div class="panel" id="panel-analytics">
+        <div class="analytics-grid">
+          <div class="analytics-card full-width">
+            <div class="ac-title"><i class="ti ti-chart-line"></i> Weekly activity</div>
+            <canvas id="weekly-chart" height="80"></canvas>
+          </div>
+          <div class="analytics-card">
+            <div class="ac-title"><i class="ti ti-chart-donut"></i> Activity breakdown</div>
+            <canvas id="pie-chart" height="200"></canvas>
+          </div>
+          <div class="analytics-card">
+            <div class="ac-title"><i class="ti ti-target"></i> Performance stats</div>
+            <div class="perf-stats" id="perf-stats"></div>
+          </div>
+          <div class="analytics-card full-width">
+            <div class="ac-title"><i class="ti ti-calendar-stats"></i> Study heatmap — last 30 days</div>
+            <div class="heatmap" id="heatmap"></div>
+          </div>
+          <div class="analytics-card full-width">
+            <div class="ac-title"><i class="ti ti-books"></i> Topics completed</div>
+            <div class="topics-list" id="topics-list"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
