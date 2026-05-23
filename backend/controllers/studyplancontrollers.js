@@ -1,5 +1,4 @@
-const StudyPlan = require("../models/StudyPlan");
-
+const StudyPlan = require("../models/studyplan");
 exports.createPlan = async (req, res) => {
   try {
     const { subject, topics, examDate } = req.body;
