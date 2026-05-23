@@ -1,4 +1,4 @@
-const BACKEND = "http://localhost:5000";
+const BACKEND = "https://nexora-ai-cair.onrender.com";
 let currentUser = { name: "Student" };
 let notesContent = "";
 let imageBase64 = "";
