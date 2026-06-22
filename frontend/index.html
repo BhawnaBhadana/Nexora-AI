@@ -1,394 +1,1189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nexora AI — Study Smarter</title>
-  <link rel="stylesheet" href="style.css"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexora AI</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{--primary:#6C63FF;--secondary:#8B5CF6;--bg:#F4F7FE;--card:#FFFFFF;--text:#111827;--text-light:#6B7280;--border:#E5E7EB;--success:#10B981;--warning:#F59E0B;--danger:#EF4444;--gold:#F59E0B;--shadow:0 10px 30px rgba(0,0,0,.08)}
+body.dark{--bg:#0F172A;--card:#1E293B;--text:#F8FAFC;--text-light:#94A3B8;--border:#334155}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:.3s}
+.page{display:none}.page.show{display:flex}
+
+/* LOGIN */
+#loginPage{min-height:100vh;overflow:hidden}
+.left-panel{width:55%;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px;position:relative;overflow:hidden}
+.left-panel::before{content:'';position:absolute;width:400px;height:400px;background:rgba(255,255,255,.07);border-radius:50%;top:-100px;left:-100px}
+.left-panel::after{content:'';position:absolute;width:300px;height:300px;background:rgba(255,255,255,.07);border-radius:50%;bottom:-80px;right:-80px}
+.brand{position:relative;z-index:1;text-align:center;color:white}
+.brand-icon{width:80px;height:80px;background:rgba(255,255,255,.2);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 24px;border:1px solid rgba(255,255,255,.3)}
+.brand h1{font-size:42px;font-weight:900;letter-spacing:-1px;margin-bottom:12px}
+.brand p{font-size:17px;opacity:.85;max-width:380px;line-height:1.6;margin-bottom:48px}
+.features{display:flex;flex-direction:column;gap:18px;text-align:left;position:relative;z-index:1}
+.feature-item{display:flex;align-items:center;gap:14px;color:white}
+.feature-icon{width:42px;height:42px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid rgba(255,255,255,.2)}
+.feature-item span{font-size:15px;font-weight:500;opacity:.9}
+.right-panel{width:45%;display:flex;align-items:center;justify-content:center;padding:40px;background:var(--card)}
+.login-card{width:100%;max-width:420px}
+.login-card h2{font-size:32px;font-weight:800;margin-bottom:8px;letter-spacing:-.5px}
+.login-card .subtitle{color:var(--text-light);font-size:15px;margin-bottom:36px}
+.auth-tabs{display:flex;background:var(--bg);border-radius:14px;padding:5px;gap:4px;margin-bottom:32px}
+.tab-btn{flex:1;border:none;background:transparent;padding:12px;border-radius:10px;font-size:15px;font-weight:600;color:var(--text-light);cursor:pointer;transition:.25s;font-family:'Inter',sans-serif}
+.tab-btn.active{background:var(--card);color:var(--primary);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:14px;font-weight:600;margin-bottom:8px}
+.input-wrap{position:relative}
+.input-wrap i{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--text-light);pointer-events:none}
+.input-wrap input{width:100%;padding:14px 16px 14px 46px;border:1.5px solid var(--border);border-radius:14px;background:var(--bg);color:var(--text);font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:.25s}
+.input-wrap input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(108,99,255,.1)}
+.eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-light);font-size:18px;padding:0}
+.options-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.remember-me{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--text-light)}
+.remember-me input{width:16px;height:16px;accent-color:var(--primary)}
+.forgot-link{font-size:14px;color:var(--primary);text-decoration:none;font-weight:600}
+.submit-btn{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;font-size:16px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:.25s;box-shadow:0 8px 24px rgba(108,99,255,.3);margin-bottom:24px}
+.submit-btn:hover{transform:translateY(-2px)}
+.divider{display:flex;align-items:center;gap:12px;margin-bottom:24px;color:var(--text-light);font-size:13px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.social-btns{display:flex;gap:12px;margin-bottom:28px}
+.social-btn{flex:1;padding:13px;border:1.5px solid var(--border);border-radius:14px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:600;color:var(--text);font-family:'Inter',sans-serif;transition:.25s}
+.social-btn:hover{border-color:var(--primary);background:rgba(108,99,255,.04)}
+.bottom-text{text-align:center;font-size:14px;color:var(--text-light)}
+.bottom-text a{color:var(--primary);font-weight:700;text-decoration:none;cursor:pointer}
+.input-error{font-size:12px;color:var(--danger);margin-top:4px;display:none}
+
+/* APP */
+#appPage{height:100vh;overflow:hidden}
+.sidebar{width:260px;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);border-right:1px solid var(--border);padding:20px 14px;display:flex;flex-direction:column;gap:4px;position:fixed;left:0;top:0;bottom:0;z-index:100;transition:.3s;overflow-y:auto}
+body.dark .sidebar{background:rgba(30,41,59,.92)}
+.sidebar.hidden{left:-260px}
+.sidebar-bottom{margin-top:auto;display:flex;flex-direction:column;gap:4px;padding-top:10px;border-top:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:12px;padding:6px 10px 18px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;flex-shrink:0}
+.logo h2{font-size:15px;font-weight:800}
+.logo span{font-size:10px;color:var(--text-light);display:block}
+.nav-btn{width:100%;border:none;background:transparent;padding:10px 12px;border-radius:10px;text-align:left;cursor:pointer;font-size:13.5px;font-weight:500;color:var(--text-light);display:flex;align-items:center;gap:9px;transition:.2s;font-family:'Inter',sans-serif;white-space:nowrap}
+.nav-btn:hover{background:rgba(108,99,255,.08);color:var(--primary)}
+.nav-btn.active{background:rgba(108,99,255,.12);color:var(--primary);font-weight:700}
+.nav-btn i{font-size:17px}
+.nav-btn.logout-btn{color:var(--danger)}
+.nav-btn.logout-btn:hover{background:rgba(239,68,68,.08)}
+
+/* PLAN BADGE IN SIDEBAR */
+.plan-badge-sidebar{margin:4px 2px;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,rgba(108,99,255,.1),rgba(139,92,246,.1));border:1px solid rgba(108,99,255,.2);cursor:pointer;transition:.2s}
+.plan-badge-sidebar:hover{background:linear-gradient(135deg,rgba(108,99,255,.18),rgba(139,92,246,.18))}
+.plan-badge-sidebar.pro{background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(251,191,36,.1));border-color:rgba(245,158,11,.3)}
+.plan-badge-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.plan-badge-name{font-size:12px;font-weight:800;color:var(--primary)}
+.plan-badge-sidebar.pro .plan-badge-name{color:#D97706}
+.plan-badge-upgrade{font-size:10px;font-weight:700;color:white;background:var(--primary);padding:2px 8px;border-radius:100px}
+.plan-badge-sidebar.pro .plan-badge-upgrade{background:#D97706}
+.plan-mini-bar{height:5px;border-radius:100px;background:rgba(108,99,255,.15);overflow:hidden}
+.plan-mini-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--primary),var(--secondary));transition:width .5s}
+.plan-badge-sidebar.pro .plan-mini-fill{background:linear-gradient(90deg,#F59E0B,#EF4444)}
+.plan-badge-label{font-size:10px;color:var(--text-light);margin-top:4px}
+
+/* STREAK WIDGET IN SIDEBAR */
+.streak-widget{margin:4px 2px;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(251,191,36,.08));border:1px solid rgba(245,158,11,.2)}
+.streak-top{display:flex;align-items:center;gap:8px}
+.streak-flame{font-size:20px}
+.streak-count{font-size:20px;font-weight:900;color:#D97706}
+.streak-label{font-size:11px;color:var(--text-light);margin-top:1px}
+.streak-days{display:flex;gap:4px;margin-top:8px}
+.streak-day{width:22px;height:22px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text-light)}
+.streak-day.done{background:linear-gradient(135deg,#F59E0B,#EF4444);color:white}
+.streak-day.today{background:linear-gradient(135deg,#F59E0B,#EF4444);color:white;box-shadow:0 0 8px rgba(245,158,11,.5)}
+
+.main{margin-left:260px;flex:1;overflow-y:auto;padding:22px;min-height:100vh;transition:.3s;max-height:100vh}
+.main.full{margin-left:0}
+.topbar{display:flex;align-items:center;gap:14px;margin-bottom:22px;padding:14px 18px;background:var(--card);border-radius:16px;border:1px solid var(--border)}
+.topbar h1{font-size:19px;font-weight:800}
+.topbar p{font-size:12px;color:var(--text-light)}
+.top-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.icon-btn{width:38px;height:38px;border:1px solid var(--border);background:var(--bg);border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--text);transition:.2s}
+.icon-btn:hover{border-color:var(--primary);color:var(--primary)}
+.profile-avatar{width:38px;height:38px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:700;cursor:pointer}
+
+/* STREAK TOPBAR CHIP */
+.streak-chip{display:flex;align-items:center;gap:5px;padding:6px 12px;background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(251,191,36,.08));border:1px solid rgba(245,158,11,.25);border-radius:100px;font-size:13px;font-weight:700;color:#D97706;cursor:pointer;transition:.2s}
+.streak-chip:hover{background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(251,191,36,.15))}
+
+/* PRO CHIP IN TOPBAR */
+.pro-chip{display:flex;align-items:center;gap:5px;padding:6px 12px;background:linear-gradient(135deg,rgba(108,99,255,.12),rgba(139,92,246,.08));border:1px solid rgba(108,99,255,.25);border-radius:100px;font-size:12px;font-weight:700;color:var(--primary);cursor:pointer;transition:.2s}
+.pro-chip:hover{background:linear-gradient(135deg,rgba(108,99,255,.2),rgba(139,92,246,.15))}
+
+.panel{display:none}
+.panel.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.hero-card{background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;border-radius:20px;padding:28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.hero-card h2{font-size:21px;font-weight:800;margin-bottom:6px}
+.hero-card p{opacity:.85;font-size:13px;max-width:380px}
+.primary-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:white;padding:11px 22px;border-radius:11px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;font-family:'Inter',sans-serif}
+.primary-btn:hover{background:rgba(255,255,255,.3)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;transition:.2s}
+.stat-card:hover{box-shadow:var(--shadow);transform:translateY(-3px)}
+.stat-card i{font-size:26px;color:var(--primary);margin-bottom:6px;display:block}
+.stat-card h3{font-size:22px;font-weight:800}
+.stat-card p{font-size:11px;color:var(--text-light);margin-top:3px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.chart-card h3{font-size:15px;font-weight:700;margin-bottom:14px}
+.tool-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+.tool-card h2{font-size:19px;font-weight:800}
+.tool-card p.desc{font-size:13px;color:var(--text-light);margin-top:-6px}
+.tool-card input,.tool-card textarea,.tool-card select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:11px;background:var(--bg);color:var(--text);font-size:13.5px;font-family:'Inter',sans-serif;outline:none;transition:.2s;resize:vertical}
+.tool-card input:focus,.tool-card textarea:focus,.tool-card select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(108,99,255,.1)}
+.tool-card textarea{min-height:110px}
+.run-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;color:white;padding:11px 24px;border-radius:11px;font-size:13.5px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;align-self:flex-start;transition:.2s;display:flex;align-items:center;gap:7px}
+.run-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(108,99,255,.3)}
+.run-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.output-box{background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:14px;font-size:13.5px;color:var(--text);min-height:90px;line-height:1.7;white-space:pre-wrap}
+.output-box.empty{color:var(--text-light);display:flex;align-items:center;justify-content:center;font-style:italic}
+.chat-box{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 210px);min-height:380px}
+.chat-messages{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px}
+.ai-message{background:rgba(108,99,255,.08);border-radius:13px 13px 13px 3px;padding:12px 16px;font-size:13.5px;align-self:flex-start;max-width:80%;line-height:1.6}
+.user-message{background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;border-radius:13px 13px 3px 13px;padding:12px 16px;font-size:13.5px;align-self:flex-end;max-width:80%}
+.chat-foot{display:flex;gap:9px;padding:14px;border-top:1px solid var(--border)}
+.chat-foot input{flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:11px;background:var(--bg);color:var(--text);font-size:13.5px;font-family:'Inter',sans-serif;outline:none;transition:.2s}
+.chat-foot input:focus{border-color:var(--primary)}
+.chat-foot button{width:42px;height:42px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;border-radius:11px;color:white;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.resume-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.resume-preview{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px;line-height:1.7;font-size:13.5px}
+.img-result{margin-top:10px;border-radius:11px;overflow:hidden;border:1px solid var(--border)}
+.img-result img{width:100%;display:block}
+.loader{width:20px;height:20px;border:3px solid rgba(255,255,255,.3);border-top:3px solid white;border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.tag-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:-4px}
+.tag{padding:5px 12px;background:rgba(108,99,255,.1);color:var(--primary);border-radius:100px;font-size:12px;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:.2s}
+.tag:hover{background:rgba(108,99,255,.2)}
+.usage-bar-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:10px}
+.usage-bar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;font-size:12px;font-weight:600}
+.usage-bar-track{height:7px;border-radius:100px;background:var(--border);overflow:hidden}
+.usage-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--primary),var(--secondary));transition:width .6s ease}
+.toast{position:fixed;right:22px;bottom:22px;background:var(--card);color:var(--text);padding:12px 18px;border-radius:13px;box-shadow:var(--shadow);z-index:9999;opacity:0;transform:translateY(20px);transition:.3s;border:1px solid var(--border);font-size:13px;font-weight:500;display:flex;align-items:center;gap:9px}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast i{font-size:17px}
+
+/* OVERLAYS & MODALS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal{background:var(--card);border-radius:22px;width:100%;animation:pop .3s ease;overflow:hidden}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-sm{max-width:400px;padding:36px;text-align:center}
+.modal-lg{max-width:700px}
+.modal-head{padding:26px 28px 0;display:flex;justify-content:space-between;align-items:flex-start}
+.modal-head h2{font-size:22px;font-weight:800}
+.modal-head p{color:var(--text-light);font-size:13px;margin-top:4px}
+.close-btn{width:34px;height:34px;border:none;background:var(--bg);border-radius:9px;cursor:pointer;font-size:17px;color:var(--text-light);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-body{padding:24px 28px}
+.logout-icon{width:68px;height:68px;background:rgba(239,68,68,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--danger);margin:0 auto 18px}
+.modal h2{font-size:21px;font-weight:800;margin-bottom:8px}
+.modal p{color:var(--text-light);font-size:13.5px;margin-bottom:26px}
+.modal-actions{display:flex;gap:10px;justify-content:center}
+.cancel-btn{padding:11px 26px;border:1.5px solid var(--border);border-radius:11px;background:transparent;color:var(--text);font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:.2s}
+.cancel-btn:hover{border-color:var(--primary);color:var(--primary)}
+.confirm-logout-btn{padding:11px 26px;border:none;border-radius:11px;background:var(--danger);color:white;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:.2s}
+.confirm-logout-btn:hover{background:#DC2626}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.pricing-card{border:2px solid var(--border);border-radius:18px;padding:22px;position:relative;transition:.2s}
+.pricing-card.hot{border-color:var(--primary);background:linear-gradient(135deg,rgba(108,99,255,.03),rgba(139,92,246,.03))}
+.hot-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;font-size:10px;font-weight:800;padding:4px 14px;border-radius:100px;white-space:nowrap}
+.pricing-card h3{font-size:17px;font-weight:800;margin-bottom:4px}
+.price-tag{font-size:34px;font-weight:900;letter-spacing:-1px;margin:10px 0 3px}
+.price-tag span{font-size:15px;font-weight:500;color:var(--text-light)}
+.price-desc{font-size:12px;color:var(--text-light);margin-bottom:18px}
+.feat-list{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:20px}
+.feat-list li{display:flex;align-items:center;gap:9px;font-size:13px}
+.feat-list li i{font-size:15px;color:var(--success);flex-shrink:0}
+.feat-list li.no i{color:#9CA3AF}
+.feat-list li.no{color:var(--text-light)}
+.plan-btn{width:100%;padding:13px;border-radius:13px;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:.2s;border:2px solid var(--border);background:transparent;color:var(--text)}
+.plan-btn.upgrade{background:linear-gradient(135deg,var(--primary),var(--secondary));border-color:transparent;color:white;box-shadow:0 8px 20px rgba(108,99,255,.3)}
+.plan-btn.upgrade:hover{transform:translateY(-2px)}
+.plan-btn:disabled{opacity:.55;cursor:default;transform:none!important}
+
+/* STREAK MODAL */
+.streak-modal-body{padding:24px 28px}
+.streak-big{text-align:center;padding:20px 0}
+.streak-big-flame{font-size:60px;display:block}
+.streak-big-count{font-size:64px;font-weight:900;color:#D97706;line-height:1}
+.streak-big-label{font-size:14px;color:var(--text-light);margin-top:4px}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:18px 0}
+.week-cell{text-align:center}
+.week-cell-day{font-size:10px;color:var(--text-light);margin-bottom:5px;font-weight:600}
+.week-cell-dot{width:32px;height:32px;border-radius:9px;background:var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:14px;transition:.2s}
+.week-cell-dot.done{background:linear-gradient(135deg,#F59E0B,#EF4444)}
+.week-cell-dot.today{background:linear-gradient(135deg,#F59E0B,#EF4444);box-shadow:0 0 12px rgba(245,158,11,.5)}
+.streak-tip{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:12px 16px;font-size:12.5px;color:#92400E;margin-top:4px}
+body.dark .streak-tip{color:#FCD34D}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(108,99,255,.3);border-radius:20px}
+
+/* MOBILE */
+@media(max-width:992px){.left-panel{display:none}.right-panel{width:100%}.sidebar{left:-260px}.sidebar.show{left:0}.main{margin-left:0}.stats-grid{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}.resume-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.stats-grid{grid-template-columns:1fr}.pricing-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
-<!-- AUTH -->
-<div id="auth-screen">
-  <div class="auth-left">
-    <div class="auth-brand">
-      <div class="brand-icon"><i class="ti ti-brain"></i></div>
-      <span class="brand-name">Nexora AI</span>
+<!-- LOGIN PAGE -->
+<div class="page show" id="loginPage">
+  <div class="left-panel">
+    <div class="brand">
+      <div class="brand-icon"><i class="ti ti-sparkles"></i></div>
+      <h1>Nexora AI</h1>
+      <p>Your intelligent study & career companion powered by cutting-edge AI</p>
     </div>
-    <h1 class="auth-headline">Study smarter<br/>with AI by your side</h1>
-    <p class="auth-sub">Doubt solving, AI notes, mock tests, resume builder, career guide and analytics — all in one place for Indian students.</p>
-    <div class="auth-features">
-      <div class="af"><i class="ti ti-message-question"></i> Instant doubt solving</div>
-      <div class="af"><i class="ti ti-notebook"></i> AI-generated notes</div>
-      <div class="af"><i class="ti ti-code"></i> Code helper</div>
-      <div class="af"><i class="ti ti-clipboard-list"></i> Mock test generator</div>
-      <div class="af"><i class="ti ti-camera"></i> Image question solver</div>
-      <div class="af"><i class="ti ti-calendar"></i> Study planner</div>
-      <div class="af"><i class="ti ti-file-cv"></i> AI resume builder</div>
-      <div class="af"><i class="ti ti-briefcase"></i> Career guide chatbot</div>
-      <div class="af"><i class="ti ti-chart-bar"></i> Analytics dashboard</div>
+    <div class="features">
+      <div class="feature-item"><div class="feature-icon"><i class="ti ti-robot"></i></div><span>AI Chat Assistant</span></div>
+      <div class="feature-item"><div class="feature-icon"><i class="ti ti-file-text"></i></div><span>Smart Notes Generator</span></div>
+      <div class="feature-item"><div class="feature-icon"><i class="ti ti-photo-ai"></i></div><span>AI Image Generation</span></div>
+      <div class="feature-item"><div class="feature-icon"><i class="ti ti-id-badge"></i></div><span>Resume Builder</span></div>
+      <div class="feature-item"><div class="feature-icon"><i class="ti ti-flame"></i></div><span>Daily Streak Tracking</span></div>
     </div>
   </div>
-  <div class="auth-right">
-    <div class="auth-box">
+  <div class="right-panel">
+    <div class="login-card">
+      <h2>Welcome back 👋</h2>
+      <p class="subtitle">Sign in to your Nexora account</p>
       <div class="auth-tabs">
-        <button class="atab active" onclick="switchTab('login')">Login</button>
-        <button class="atab" onclick="switchTab('register')">Register</button>
+        <button class="tab-btn active" onclick="switchTab('login',this)">Sign In</button>
+        <button class="tab-btn" onclick="switchTab('signup',this)">Sign Up</button>
       </div>
-      <div id="login-form">
+      <div id="loginForm">
         <div class="form-group">
-          <label>Email</label>
-          <div class="input-wrap"><i class="ti ti-mail"></i><input type="email" id="login-email" placeholder="your@email.com"/></div>
+          <label>Email Address</label>
+          <div class="input-wrap"><i class="ti ti-mail"></i><input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"></div>
+          <p class="input-error" id="loginEmailErr">Please enter a valid email</p>
         </div>
         <div class="form-group">
           <label>Password</label>
-          <div class="input-wrap"><i class="ti ti-lock"></i><input type="password" id="login-password" placeholder="Enter password"/></div>
+          <div class="input-wrap"><i class="ti ti-lock"></i><input type="password" id="loginPass" placeholder="••••••••"><button class="eye-btn" onclick="togglePwd('loginPass',this)" type="button"><i class="ti ti-eye"></i></button></div>
+          <p class="input-error" id="loginPassErr">Password must be 6+ characters</p>
         </div>
-        <button class="btn-primary" onclick="handleLogin()">Login to Nexora</button>
-        <p class="form-hint">Don't have an account? <a onclick="switchTab('register')">Register free</a></p>
+        <div class="options-row">
+          <label class="remember-me"><input type="checkbox" id="rememberMe"> Remember me</label>
+          <a class="forgot-link" href="#">Forgot password?</a>
+        </div>
+        <button class="submit-btn" onclick="doLogin()">Sign In</button>
       </div>
-      <div id="register-form" style="display:none">
+      <div id="signupForm" style="display:none">
         <div class="form-group">
-          <label>Full name</label>
-          <div class="input-wrap"><i class="ti ti-user"></i><input type="text" id="reg-name" placeholder="Your name"/></div>
+          <label>Full Name</label>
+          <div class="input-wrap"><i class="ti ti-user"></i><input type="text" id="signupName" placeholder="Your full name"></div>
+          <p class="input-error" id="signupNameErr">Name is required</p>
         </div>
         <div class="form-group">
-          <label>Email</label>
-          <div class="input-wrap"><i class="ti ti-mail"></i><input type="email" id="reg-email" placeholder="your@email.com"/></div>
+          <label>Email Address</label>
+          <div class="input-wrap"><i class="ti ti-mail"></i><input type="email" id="signupEmail" placeholder="you@example.com"></div>
+          <p class="input-error" id="signupEmailErr">Please enter a valid email</p>
         </div>
         <div class="form-group">
           <label>Password</label>
-          <div class="input-wrap"><i class="ti ti-lock"></i><input type="password" id="reg-password" placeholder="Create password"/></div>
+          <div class="input-wrap"><i class="ti ti-lock"></i><input type="password" id="signupPass" placeholder="Min 6 characters"><button class="eye-btn" onclick="togglePwd('signupPass',this)" type="button"><i class="ti ti-eye"></i></button></div>
+          <p class="input-error" id="signupPassErr">Password must be 6+ characters</p>
         </div>
-        <button class="btn-primary" onclick="handleRegister()">Create free account</button>
-        <p class="form-hint">Already have an account? <a onclick="switchTab('login')">Login</a></p>
+        <button class="submit-btn" onclick="doSignup()">Create Account</button>
       </div>
-      <div id="auth-msg" class="auth-msg"></div>
+      <div class="divider">or continue with</div>
+      <div class="social-btns">
+        <button class="social-btn" onclick="demoLogin()"><i class="ti ti-brand-google"></i> Google</button>
+        <button class="social-btn" onclick="demoLogin()"><i class="ti ti-brand-github"></i> GitHub</button>
+      </div>
+      <p class="bottom-text" id="bottomToggle">Don't have an account? <a onclick="switchTab('signup',null)">Sign up free</a></p>
     </div>
   </div>
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard" style="display:none">
-  <div class="sidebar">
+<!-- APP PAGE -->
+<div class="page" id="appPage">
+  <aside class="sidebar" id="sidebar">
     <div class="logo">
-      <div class="logo-icon"><i class="ti ti-brain"></i></div>
-      <div>
-        <div class="logo-text">Nexora AI</div>
-        <div class="logo-sub">STUDY SMARTER</div>
-      </div>
+      <div class="logo-icon"><i class="ti ti-sparkles"></i></div>
+      <div><h2>Nexora AI</h2><span>Study & Career</span></div>
     </div>
-    <div class="nav-section">STUDY</div>
-    <div class="nav-item active" onclick="switchPanel(this,'home')"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></div>
-    <div class="nav-item" onclick="switchPanel(this,'doubt')"><i class="ti ti-message-question"></i><span>Doubt solver</span></div>
-    <div class="nav-item" onclick="switchPanel(this,'notes')"><i class="ti ti-notebook"></i><span>AI notes</span></div>
-    <div class="nav-item" onclick="switchPanel(this,'code')"><i class="ti ti-code"></i><span>Code helper</span></div>
-    <div class="nav-item" onclick="switchPanel(this,'test')"><i class="ti ti-clipboard-list"></i><span>Mock tests</span></div>
-    <div class="nav-item" onclick="switchPanel(this,'image')"><i class="ti ti-camera"></i><span>Image solver</span></div>
-    <div class="nav-item" onclick="switchPanel(this,'planner')"><i class="ti ti-calendar"></i><span>Study planner</span></div>
-    <div class="nav-section">CAREER</div>
-    <div class="nav-item" onclick="switchPanel(this,'resume')"><i class="ti ti-file-cv"></i><span>Resume builder</span></div>
-    <div class="nav-item" onclick="switchPanel(this,'career')"><i class="ti ti-briefcase"></i><span>Career guide</span></div>
-    <div class="nav-section">INSIGHTS</div>
-    <div class="nav-item" onclick="switchPanel(this,'analytics')"><i class="ti ti-chart-bar"></i><span>Analytics</span></div>
-    <div class="nav-section" style="margin-top:auto">ACCOUNT</div>
-    <div class="nav-item" onclick="handleLogout()"><i class="ti ti-logout"></i><span>Logout</span></div>
-    <div class="sidebar-footer">
-      <div class="sf-avatar" id="sf-avatar">B</div>
-      <div>
-        <div class="sf-name" id="sf-name">Student</div>
-        <div class="sf-plan">Free plan</div>
-      </div>
-    </div>
-  </div>
+    <button class="nav-btn active" onclick="showPanel('dashboard',this)"><i class="ti ti-layout-dashboard"></i> Dashboard</button>
+    <button class="nav-btn" onclick="showPanel('chat',this)"><i class="ti ti-message-chatbot"></i> AI Chat</button>
+    <button class="nav-btn" onclick="showPanel('notes',this)"><i class="ti ti-notes"></i> Notes Generator</button>
+    <button class="nav-btn" onclick="showPanel('imagegen',this)"><i class="ti ti-photo-ai"></i> Image Generator</button>
+    <button class="nav-btn" onclick="showPanel('resume',this)"><i class="ti ti-id-badge"></i> Resume Builder</button>
+    <button class="nav-btn" onclick="showPanel('mocktest',this)"><i class="ti ti-checklist"></i> Mock Test</button>
+    <button class="nav-btn" onclick="showPanel('planner',this)"><i class="ti ti-calendar"></i> Study Planner</button>
+    <button class="nav-btn" onclick="showPanel('analytics',this)"><i class="ti ti-chart-bar"></i> Analytics</button>
 
-  <div class="main">
+    <!-- STREAK WIDGET -->
+    <div class="streak-widget" onclick="openStreakModal()" style="cursor:pointer">
+      <div class="streak-top">
+        <span class="streak-flame">🔥</span>
+        <div><div class="streak-count" id="sidebarStreakCount">0</div><div class="streak-label">day streak</div></div>
+      </div>
+      <div class="streak-days" id="sidebarStreakDays"></div>
+    </div>
+
+    <!-- PLAN BADGE -->
+    <div class="plan-badge-sidebar" id="planBadgeSidebar" onclick="openUpgradeModal()">
+      <div class="plan-badge-top">
+        <span class="plan-badge-name" id="planBadgeName">FREE PLAN</span>
+        <span class="plan-badge-upgrade" id="planBadgeUpgrade">Upgrade</span>
+      </div>
+      <div class="plan-mini-bar"><div class="plan-mini-fill" id="planMiniFill" style="width:0%"></div></div>
+      <div class="plan-badge-label" id="planBadgeLabel">0 / 0 credits used</div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="nav-btn" onclick="showPanel('settings',this)"><i class="ti ti-settings"></i> Settings</button>
+      <button class="nav-btn logout-btn" onclick="openLogout()"><i class="ti ti-logout"></i> Logout</button>
+    </div>
+  </aside>
+
+  <main class="main" id="mainArea">
     <div class="topbar">
-      <div>
-        <div class="page-title" id="page-title">Dashboard</div>
-        <div class="page-sub" id="page-sub">What will you learn today?</div>
-      </div>
-      <div class="topbar-right">
-        <div class="streak-badge"><i class="ti ti-flame"></i><span id="top-streak">0</span> day streak</div>
-        <div class="user-circle" id="user-circle">B</div>
+      <button class="icon-btn" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
+      <div><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Welcome back!</p></div>
+      <div class="top-actions">
+        <!-- streak chip -->
+        <div class="streak-chip" onclick="openStreakModal()"><i class="ti ti-flame"></i><span id="topStreakCount">0</span></div>
+        <!-- plan chip -->
+        <div class="pro-chip" id="topPlanChip" onclick="openUpgradeModal()"><i class="ti ti-crown"></i><span id="topPlanLabel">Free</span></div>
+        <button class="icon-btn" onclick="toggleTheme()"><i class="ti ti-sun" id="themeIcon"></i></button>
+        <button class="icon-btn"><i class="ti ti-bell"></i></button>
+        <div class="profile-avatar" id="profileAvatar">U</div>
       </div>
     </div>
 
-    <div class="content">
-
-      <!-- HOME -->
-      <div class="panel active" id="panel-home">
-        <div class="stat-row">
-          <div class="stat-card"><div class="stat-label"><i class="ti ti-message-question" style="color:#7F77DD"></i> Doubts solved</div><div class="stat-val" id="stat-doubts">0</div></div>
-          <div class="stat-card"><div class="stat-label"><i class="ti ti-notebook" style="color:#1D9E75"></i> Notes created</div><div class="stat-val" id="stat-notes">0</div></div>
-          <div class="stat-card"><div class="stat-label"><i class="ti ti-clipboard-list" style="color:#D85A30"></i> Tests taken</div><div class="stat-val" id="stat-tests">0</div></div>
-          <div class="stat-card"><div class="stat-label"><i class="ti ti-target" style="color:#EF9F27"></i> Accuracy</div><div class="stat-val" id="stat-accuracy">0%</div></div>
+    <!-- DASHBOARD -->
+    <div class="panel active" id="dashboard">
+      <div class="hero-card">
+        <div>
+          <h2 id="heroGreeting">Good to see you! 🚀</h2>
+          <p>Continue your learning journey. AI-powered tools are ready for you.</p>
         </div>
-        <div class="section-label">QUICK START</div>
-        <div class="feat-grid">
-          <div class="feat-card purple" onclick="switchPanel(document.querySelectorAll('.nav-item')[1],'doubt')">
-            <div class="feat-accent purple-acc"></div>
-            <div class="feat-icon purple-icon"><i class="ti ti-message-question"></i></div>
-            <div class="feat-title">Ask a doubt</div>
-            <div class="feat-desc">Instant AI answers for any subject</div>
-            <div class="feat-badge purple-badge">AI powered</div>
+        <button class="primary-btn" onclick="showPanel('chat',document.querySelector('[onclick*=chat]'))">Start AI Chat</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><i class="ti ti-notes"></i><h3 id="statNotes">0</h3><p>Notes Generated</p></div>
+        <div class="stat-card"><i class="ti ti-message-chatbot"></i><h3 id="statChats">0</h3><p>Chat Messages</p></div>
+        <div class="stat-card"><i class="ti ti-photo-ai"></i><h3 id="statImages">0</h3><p>Images Created</p></div>
+        <div class="stat-card"><i class="ti ti-flame" style="color:#F59E0B"></i><h3 id="statStreak">0</h3><p>Day Streak 🔥</p></div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-card"><h3>Weekly Activity</h3><canvas id="weeklyChart"></canvas></div>
+        <div class="chart-card"><h3>Feature Usage</h3><canvas id="usageChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>AI Usage — <span id="planLabelDash" style="color:var(--primary);font-weight:800">Free Plan</span></h3>
+        <div class="usage-bar-wrap"><div class="usage-bar-header"><span>Chat Messages</span><span id="chatUsageLabel">0/20</span></div><div class="usage-bar-track"><div class="usage-bar-fill" id="chatUsageBar" style="width:0%"></div></div></div>
+        <div class="usage-bar-wrap"><div class="usage-bar-header"><span>Notes Generated</span><span id="notesUsageLabel">0/10</span></div><div class="usage-bar-track"><div class="usage-bar-fill" id="notesUsageBar" style="width:0%"></div></div></div>
+        <div class="usage-bar-wrap"><div class="usage-bar-header"><span>Images Created</span><span id="imagesUsageLabel">0/5</span></div><div class="usage-bar-track"><div class="usage-bar-fill" id="imagesUsageBar" style="width:0%"></div></div></div>
+        <div style="margin-top:12px"><button onclick="openUpgradeModal()" style="padding:10px 20px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;color:white;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer"><i class="ti ti-crown" style="margin-right:6px"></i>Upgrade to Pro</button></div>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="panel" id="chat">
+      <div class="chat-box">
+        <div class="chat-messages" id="chatMessages">
+          <div class="ai-message">👋 Hi! I'm your Nexora AI assistant. Ask me anything — study help, career advice, coding, creative writing. How can I help you today?</div>
+        </div>
+        <div class="chat-foot">
+          <input type="text" id="chatInput" placeholder="Ask anything..." autocomplete="off">
+          <button onclick="sendMessage()"><i class="ti ti-send"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="panel" id="notes">
+      <div class="tool-card">
+        <h2><i class="ti ti-notes" style="color:var(--primary)"></i> AI Notes Generator</h2>
+        <p class="desc">Enter any topic and get structured notes instantly.</p>
+        <input type="text" id="notesTopic" placeholder="e.g. Photosynthesis, World War II, Machine Learning...">
+        <select id="notesStyle">
+          <option value="detailed">Detailed Notes</option>
+          <option value="bullet">Bullet Points</option>
+          <option value="summary">Quick Summary</option>
+          <option value="exam">Exam Notes</option>
+        </select>
+        <button class="run-btn" id="notesBtn" onclick="generateNotes()"><i class="ti ti-wand"></i> Generate Notes</button>
+        <div class="output-box empty" id="notesOutput">Your AI-generated notes will appear here...</div>
+      </div>
+    </div>
+
+    <!-- IMAGE GEN -->
+    <div class="panel" id="imagegen">
+      <div class="tool-card">
+        <h2><i class="ti ti-photo-ai" style="color:var(--primary)"></i> AI Image Generator</h2>
+        <p class="desc">Describe an image and our AI will create it for you.</p>
+        <textarea id="imgPrompt" placeholder="e.g. A futuristic city at sunset with flying cars, purple sky, neon lights..."></textarea>
+        <div class="tag-row">
+          <button class="tag" onclick="addTag('photorealistic')">photorealistic</button>
+          <button class="tag" onclick="addTag('digital art')">digital art</button>
+          <button class="tag" onclick="addTag('anime style')">anime style</button>
+          <button class="tag" onclick="addTag('oil painting')">oil painting</button>
+          <button class="tag" onclick="addTag('4K ultra HD')">4K ultra HD</button>
+          <button class="tag" onclick="addTag('cinematic lighting')">cinematic lighting</button>
+        </div>
+        <select id="imgStyle">
+          <option value="realistic">Realistic</option>
+          <option value="artistic">Artistic / Painterly</option>
+          <option value="anime">Anime / Manga</option>
+          <option value="3d">3D Render</option>
+          <option value="sketch">Sketch / Line Art</option>
+        </select>
+        <button class="run-btn" id="imgBtn" onclick="generateImage()"><i class="ti ti-photo"></i> Generate Image</button>
+        <div id="imgOutput"></div>
+      </div>
+    </div>
+
+    <!-- RESUME -->
+    <div class="panel" id="resume">
+      <div class="tool-card">
+        <h2><i class="ti ti-id-badge" style="color:var(--primary)"></i> AI Resume Builder</h2>
+        <p class="desc">Fill in your details and AI will craft a professional resume.</p>
+        <div class="resume-grid">
+          <input type="text" id="rName" placeholder="Full Name *">
+          <input type="text" id="rTitle" placeholder="Job Title / Role *">
+          <input type="email" id="rEmail" placeholder="Email Address">
+          <input type="text" id="rPhone" placeholder="Phone Number">
+          <input type="text" id="rLocation" placeholder="City, Country">
+          <input type="text" id="rLinkedIn" placeholder="LinkedIn URL">
+        </div>
+        <textarea id="rSummary" placeholder="Professional summary / About yourself..."></textarea>
+        <textarea id="rExperience" placeholder="Work experience (company, role, duration, responsibilities)..."></textarea>
+        <textarea id="rEducation" placeholder="Education (degree, institution, year)..."></textarea>
+        <textarea id="rSkills" placeholder="Skills: Python, React, Machine Learning..."></textarea>
+        <button class="run-btn" id="resumeBtn" onclick="generateResume()"><i class="ti ti-wand"></i> Generate Resume</button>
+        <div class="output-box empty" id="resumeOutput">Your AI-crafted resume will appear here...</div>
+      </div>
+    </div>
+
+    <!-- MOCK TEST -->
+    <div class="panel" id="mocktest">
+      <div class="tool-card">
+        <h2><i class="ti ti-checklist" style="color:var(--primary)"></i> Mock Test Generator</h2>
+        <p class="desc">Generate custom practice tests on any subject.</p>
+        <input type="text" id="testSubject" placeholder="e.g. Physics - Newton's Laws, JavaScript Basics...">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <select id="testDifficulty"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option><option value="mixed">Mixed</option></select>
+          <select id="testCount"><option value="5">5 Questions</option><option value="10" selected>10 Questions</option><option value="15">15 Questions</option></select>
+        </div>
+        <button class="run-btn" id="testBtn" onclick="generateTest()"><i class="ti ti-wand"></i> Generate Test</button>
+        <div class="output-box empty" id="testOutput">Your mock test will appear here...</div>
+      </div>
+    </div>
+
+    <!-- PLANNER -->
+    <div class="panel" id="planner">
+      <div class="tool-card">
+        <h2><i class="ti ti-calendar" style="color:var(--primary)"></i> AI Study Planner</h2>
+        <p class="desc">Let AI create a personalized study schedule for you.</p>
+        <input type="text" id="planGoal" placeholder="Exam / Goal: e.g. JEE Mains, UPSC Prelims...">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <input type="date" id="planStartDate">
+          <input type="date" id="planEndDate">
+        </div>
+        <select id="planHours"><option value="2">2 hours/day</option><option value="4" selected>4 hours/day</option><option value="6">6 hours/day</option><option value="8">8 hours/day</option></select>
+        <textarea id="planSubjects" placeholder="Subjects: Maths, Physics, Chemistry..."></textarea>
+        <button class="run-btn" id="planBtn" onclick="createPlan()"><i class="ti ti-wand"></i> Create Plan</button>
+        <div class="output-box empty" id="planOutput">Your personalized study plan will appear here...</div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="panel" id="analytics">
+      <div class="stats-grid">
+        <div class="stat-card"><i class="ti ti-clock"></i><h3>47h</h3><p>Total Study Time</p></div>
+        <div class="stat-card"><i class="ti ti-trending-up"></i><h3>82%</h3><p>Avg. Test Score</p></div>
+        <div class="stat-card"><i class="ti ti-flame" style="color:#F59E0B"></i><h3 id="analyticsStreak">0</h3><p>Day Streak</p></div>
+        <div class="stat-card"><i class="ti ti-award"></i><h3>Gold</h3><p>Rank Badge</p></div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-card"><h3>Monthly Progress</h3><canvas id="monthlyChart"></canvas></div>
+        <div class="chart-card"><h3>Subject Breakdown</h3><canvas id="subjectChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="panel" id="settings">
+      <div class="tool-card">
+        <h2><i class="ti ti-settings" style="color:var(--primary)"></i> Settings</h2>
+        <p class="desc">Manage your account and preferences.</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="padding:14px;background:var(--bg);border-radius:11px;border:1px solid var(--border)">
+            <p style="font-weight:700;margin-bottom:8px;font-size:13.5px">Account Info</p>
+            <p style="font-size:13px;color:var(--text-light)">Email: <span id="settingsEmail" style="color:var(--text)">—</span></p>
+            <p style="font-size:13px;color:var(--text-light);margin-top:4px">Name: <span id="settingsName" style="color:var(--text)">—</span></p>
+            <p style="font-size:13px;color:var(--text-light);margin-top:4px">Plan: <span id="settingsPlan" style="color:var(--primary);font-weight:700">Free</span></p>
           </div>
-          <div class="feat-card teal" onclick="switchPanel(document.querySelectorAll('.nav-item')[2],'notes')">
-            <div class="feat-accent teal-acc"></div>
-            <div class="feat-icon teal-icon"><i class="ti ti-notebook"></i></div>
-            <div class="feat-title">Generate notes</div>
-            <div class="feat-desc">Clean structured notes on any topic</div>
-            <div class="feat-badge teal-badge">Save as PDF</div>
+          <div style="padding:14px;background:var(--bg);border-radius:11px;border:1px solid var(--border)">
+            <p style="font-weight:700;margin-bottom:10px;font-size:13.5px">Current Plan</p>
+            <button onclick="openUpgradeModal()" style="padding:11px 22px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;color:white;border-radius:11px;font-weight:700;font-family:inherit;cursor:pointer;font-size:13px"><i class="ti ti-crown" style="margin-right:6px"></i>View Plans & Upgrade</button>
           </div>
-          <div class="feat-card amber" onclick="switchPanel(document.querySelectorAll('.nav-item')[3],'code')">
-            <div class="feat-accent amber-acc"></div>
-            <div class="feat-icon amber-icon"><i class="ti ti-code"></i></div>
-            <div class="feat-title">Code helper</div>
-            <div class="feat-desc">Write, debug and understand code</div>
-            <div class="feat-badge amber-badge">Multi-language</div>
+          <div style="padding:14px;background:var(--bg);border-radius:11px;border:1px solid var(--border)">
+            <p style="font-weight:700;margin-bottom:10px;font-size:13.5px">Appearance</p>
+            <button onclick="toggleTheme()" style="padding:11px 22px;background:var(--card);border:1.5px solid var(--border);color:var(--text);border-radius:11px;font-weight:600;font-family:inherit;cursor:pointer;font-size:13px"><i class="ti ti-sun" style="margin-right:6px"></i>Toggle Dark Mode</button>
           </div>
-          <div class="feat-card coral" onclick="switchPanel(document.querySelectorAll('.nav-item')[4],'test')">
-            <div class="feat-accent coral-acc"></div>
-            <div class="feat-icon coral-icon"><i class="ti ti-clipboard-list"></i></div>
-            <div class="feat-title">Mock tests</div>
-            <div class="feat-desc">Practice questions generated by AI</div>
-            <div class="feat-badge coral-badge">With answers</div>
-          </div>
-          <div class="feat-card blue" onclick="switchPanel(document.querySelectorAll('.nav-item')[5],'image')">
-            <div class="feat-accent blue-acc"></div>
-            <div class="feat-icon blue-icon"><i class="ti ti-camera"></i></div>
-            <div class="feat-title">Image solver</div>
-            <div class="feat-desc">Upload question photo — get solution</div>
-            <div class="feat-badge blue-badge">Vision AI</div>
-          </div>
-          <div class="feat-card green" onclick="switchPanel(document.querySelectorAll('.nav-item')[6],'planner')">
-            <div class="feat-accent green-acc"></div>
-            <div class="feat-icon green-icon"><i class="ti ti-calendar"></i></div>
-            <div class="feat-title">Study planner</div>
-            <div class="feat-desc">Plan subjects and track progress</div>
-            <div class="feat-badge green-badge">Track progress</div>
-          </div>
-          <div class="feat-card pink" onclick="switchPanel(document.querySelectorAll('.nav-item')[8],'resume')">
-            <div class="feat-accent pink-acc"></div>
-            <div class="feat-icon pink-icon"><i class="ti ti-file-cv"></i></div>
-            <div class="feat-title">Resume builder</div>
-            <div class="feat-desc">AI builds your professional resume</div>
-            <div class="feat-badge pink-badge">Download PDF</div>
-          </div>
-          <div class="feat-card indigo" onclick="switchPanel(document.querySelectorAll('.nav-item')[9],'career')">
-            <div class="feat-accent indigo-acc"></div>
-            <div class="feat-icon indigo-icon"><i class="ti ti-briefcase"></i></div>
-            <div class="feat-title">Career guide</div>
-            <div class="feat-desc">AI career counsellor for Indian students</div>
-            <div class="feat-badge indigo-badge">India focused</div>
-          </div>
-          <div class="feat-card stat" onclick="switchPanel(document.querySelectorAll('.nav-item')[11],'analytics')">
-            <div class="feat-accent stat-acc"></div>
-            <div class="feat-icon stat-icon"><i class="ti ti-chart-bar"></i></div>
-            <div class="feat-title">Analytics</div>
-            <div class="feat-desc">Track your study habits and progress</div>
-            <div class="feat-badge stat-badge">Charts + graphs</div>
+          <div style="padding:14px;background:var(--bg);border-radius:11px;border:1px solid var(--border)">
+            <p style="font-weight:700;margin-bottom:10px;font-size:13.5px">Danger Zone</p>
+            <button onclick="openLogout()" style="padding:10px 20px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--danger);border-radius:10px;cursor:pointer;font-weight:600;font-family:inherit;font-size:13px">Logout</button>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- DOUBT -->
-      <div class="panel" id="panel-doubt">
-        <div class="chat-area" id="chat-messages">
-          <div class="bubble-wrap">
-            <div class="bub-avatar ai-av"><i class="ti ti-brain"></i></div>
-            <div class="bubble ai-bubble">Hello! I am your Nexora AI study assistant. Ask me any doubt — Maths, Science, Coding, anything!</div>
-          </div>
-        </div>
-        <div class="input-row">
-          <input type="text" id="doubt-input" class="chat-input" placeholder="Type your doubt here..." onkeydown="if(event.key==='Enter') sendDoubt()"/>
-          <button class="send-btn" onclick="sendDoubt()"><i class="ti ti-send"></i></button>
-        </div>
-      </div>
+  </main>
+</div>
 
-      <!-- NOTES -->
-      <div class="panel" id="panel-notes">
-        <div class="topic-row">
-          <input type="text" id="notes-topic" class="topic-input" placeholder="Enter topic — e.g. DBMS, Operating System, Python..."/>
-          <button class="gen-btn teal-btn" onclick="generateNotes()"><i class="ti ti-sparkles"></i> Generate</button>
-        </div>
-        <div class="notes-output" id="notes-output">
-          <div class="empty-state"><i class="ti ti-notebook"></i><p>Enter a topic above to generate notes</p></div>
-        </div>
-        <div class="notes-actions" id="notes-actions" style="display:none">
-          <button class="action-btn" onclick="copyNotes()"><i class="ti ti-copy"></i> Copy</button>
-          <button class="action-btn" onclick="downloadNotes()"><i class="ti ti-download"></i> Save</button>
-        </div>
-      </div>
-
-      <!-- CODE -->
-      <div class="panel" id="panel-code">
-        <div class="topic-row">
-          <input type="text" id="code-input" class="topic-input" placeholder="Describe what to code or paste your code..." onkeydown="if(event.key==='Enter') runCodeHelper()"/>
-          <button class="gen-btn amber-btn" onclick="runCodeHelper()"><i class="ti ti-player-play"></i> Run AI</button>
-        </div>
-        <div class="code-output" id="code-output">
-          <div class="empty-state"><i class="ti ti-code"></i><p>Describe your code problem above</p></div>
-        </div>
-      </div>
-
-      <!-- TEST -->
-      <div class="panel" id="panel-test">
-        <div class="topic-row">
-          <input type="text" id="test-topic" class="topic-input" placeholder="Topic e.g. DBMS, Networks, Python..."/>
-          <select id="test-difficulty" class="diff-select">
-            <option>Easy</option><option selected>Medium</option><option>Hard</option>
-          </select>
-          <button class="gen-btn coral-btn" onclick="generateTest()"><i class="ti ti-sparkles"></i> Generate</button>
-        </div>
-        <div class="test-output" id="test-output">
-          <div class="empty-state"><i class="ti ti-clipboard-list"></i><p>Enter a topic above to generate mock test</p></div>
-        </div>
-      </div>
-
-      <!-- IMAGE SOLVER -->
-      <div class="panel" id="panel-image">
-        <div class="image-upload-area" id="image-upload-area" onclick="document.getElementById('image-file-input').click()">
-          <i class="ti ti-cloud-upload"></i>
-          <p>Click to upload image or drag and drop</p>
-          <span>Supports JPG, PNG — max 5MB</span>
-          <input type="file" id="image-file-input" accept="image/*" style="display:none" onchange="handleImageUpload(event)"/>
-        </div>
-        <div id="image-preview-wrap" style="display:none;gap:12px;align-items:flex-start;flex-wrap:wrap;flex-shrink:0">
-          <img id="image-preview" src="" alt="uploaded question" style="max-height:180px;border-radius:12px;border:1px solid var(--border)"/>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <button class="gen-btn blue-btn" onclick="solveImage()"><i class="ti ti-brain"></i> Solve this question</button>
-            <button class="action-btn" onclick="resetImage()"><i class="ti ti-refresh"></i> Upload new image</button>
-          </div>
-        </div>
-        <div class="notes-output" id="image-output">
-          <div class="empty-state"><i class="ti ti-camera"></i><p>Upload an image of your question above</p></div>
-        </div>
-      </div>
-
-      <!-- STUDY PLANNER -->
-      <div class="panel" id="panel-planner">
-        <div class="planner-create">
-          <div class="planner-form-title"><i class="ti ti-calendar-plus"></i> Create new study plan</div>
-          <div class="planner-create-row">
-            <input type="text" id="plan-subject" class="topic-input" placeholder="Subject e.g. Mathematics, DBMS, Python..."/>
-            <input type="date" id="plan-examdate" class="topic-input" style="max-width:180px"/>
-            <button class="gen-btn teal-btn" onclick="generatePlanWithAI()"><i class="ti ti-sparkles"></i> AI Plan</button>
-          </div>
-        </div>
-        <div class="plans-list" id="plans-list">
-          <div class="empty-state"><i class="ti ti-calendar"></i><p>Create your first study plan above</p></div>
-        </div>
-      </div>
-
-      <!-- RESUME BUILDER -->
-      <div class="panel" id="panel-resume">
-        <div class="resume-layout">
-          <div class="resume-form">
-            <div class="resume-form-title"><i class="ti ti-file-cv"></i> Your details</div>
-            <div class="rf-section">Personal info</div>
-            <input type="text" id="r-name" class="r-input" placeholder="Full name *"/>
-            <input type="text" id="r-email" class="r-input" placeholder="Email *"/>
-            <input type="text" id="r-phone" class="r-input" placeholder="Phone number"/>
-            <input type="text" id="r-location" class="r-input" placeholder="City, State"/>
-            <input type="text" id="r-linkedin" class="r-input" placeholder="LinkedIn URL (optional)"/>
-            <input type="text" id="r-github" class="r-input" placeholder="GitHub URL (optional)"/>
-            <div class="rf-section">Education</div>
-            <input type="text" id="r-college" class="r-input" placeholder="College name *"/>
-            <input type="text" id="r-degree" class="r-input" placeholder="Degree e.g. BSCA, BCA, B.Tech"/>
-            <input type="text" id="r-year" class="r-input" placeholder="Year e.g. 2022–2026"/>
-            <input type="text" id="r-cgpa" class="r-input" placeholder="CGPA / Percentage"/>
-            <div class="rf-section">Skills</div>
-            <textarea id="r-skills" class="r-textarea" placeholder="Python, JavaScript, React, MongoDB, SQL, Git..."></textarea>
-            <div class="rf-section">Projects</div>
-            <textarea id="r-projects" class="r-textarea" placeholder="Project 1: Name — description, tech used&#10;Project 2: Name — description, tech used"></textarea>
-            <div class="rf-section">Experience (optional)</div>
-            <textarea id="r-experience" class="r-textarea" placeholder="Internship or work experience..."></textarea>
-            <div class="rf-section">Achievements (optional)</div>
-            <textarea id="r-achievements" class="r-textarea" placeholder="Hackathons, certifications, awards..."></textarea>
-            <div class="rf-section">Career objective</div>
-            <textarea id="r-objective" class="r-textarea" placeholder="Brief career objective or summary..."></textarea>
-            <button class="gen-btn purple-btn" onclick="generateResume()" style="width:100%;justify-content:center;margin-top:8px">
-              <i class="ti ti-sparkles"></i> Generate resume
-            </button>
-          </div>
-          <div class="resume-preview">
-            <div class="resume-preview-topbar">
-              <span style="font-size:13px;font-weight:700;color:var(--text)">Resume preview</span>
-              <button class="action-btn" onclick="downloadResume()"><i class="ti ti-download"></i> Download PDF</button>
-            </div>
-            <div class="resume-output" id="resume-output">
-              <div class="empty-state"><i class="ti ti-file-cv"></i><p>Fill in your details and click Generate</p></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CAREER GUIDE -->
-      <div class="panel" id="panel-career">
-        <div class="career-layout">
-          <div class="career-sidebar">
-            <div class="career-sidebar-title">QUICK TOPICS</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('What career paths are available for BCA and BSCA students in India?')"><i class="ti ti-road"></i> Career paths</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('What skills should I learn to get a good software job in India?')"><i class="ti ti-bulb"></i> Skills to learn</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('How to prepare for placements and campus interviews in India?')"><i class="ti ti-building"></i> Placement prep</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('What are the best certifications for computer science students in India?')"><i class="ti ti-certificate"></i> Certifications</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('How to get internships as a college student in India?')"><i class="ti ti-briefcase"></i> Internships</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('How to build a strong LinkedIn profile as a student in India?')"><i class="ti ti-brand-linkedin"></i> LinkedIn tips</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('What is the average salary for fresher software engineers in India in 2025?')"><i class="ti ti-coin"></i> Salary guide</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('Should I do MBA or MTech after BCA or BSCA in India?')"><i class="ti ti-school"></i> Higher studies</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('How to crack product companies and FAANG from India as a fresher?')"><i class="ti ti-trophy"></i> FAANG prep</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('How to start freelancing as a college student in India and earn money?')"><i class="ti ti-device-laptop"></i> Freelancing</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('How to crack government IT jobs like TCS, Infosys, Wipro, HCL as a fresher?')"><i class="ti ti-building-bank"></i> Service companies</div>
-            <div class="career-topic-btn" onclick="askCareerTopic('How to build a portfolio and GitHub profile that impresses recruiters?')"><i class="ti ti-brand-github"></i> Portfolio tips</div>
-          </div>
-          <div class="career-chat-wrap">
-            <div class="chat-area" id="career-messages">
-              <div class="bubble-wrap">
-                <div class="bub-avatar career-av"><i class="ti ti-briefcase"></i></div>
-                <div class="bubble ai-bubble">Hello! I am your Nexora Career Guide — an AI career counsellor built for Indian college students.<br><br>Ask me anything about jobs, salaries, skills, internships, placements, or your career after college. I will give you honest, India-specific advice!</div>
-              </div>
-            </div>
-            <div class="input-row">
-              <input type="text" id="career-input" class="chat-input" placeholder="Ask about careers, jobs, skills, salary..." onkeydown="if(event.key==='Enter') sendCareerMsg()"/>
-              <button class="send-btn" style="background:var(--indigo)" onclick="sendCareerMsg()"><i class="ti ti-send"></i></button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ANALYTICS -->
-      <div class="panel" id="panel-analytics">
-        <div class="analytics-grid">
-          <div class="analytics-card full-width">
-            <div class="ac-title"><i class="ti ti-chart-line"></i> Weekly activity</div>
-            <canvas id="weekly-chart" height="80"></canvas>
-          </div>
-          <div class="analytics-card">
-            <div class="ac-title"><i class="ti ti-chart-donut"></i> Activity breakdown</div>
-            <canvas id="pie-chart" height="200"></canvas>
-          </div>
-          <div class="analytics-card">
-            <div class="ac-title"><i class="ti ti-target"></i> Performance stats</div>
-            <div class="perf-stats" id="perf-stats"></div>
-          </div>
-          <div class="analytics-card full-width">
-            <div class="ac-title"><i class="ti ti-calendar-stats"></i> Study heatmap — last 30 days</div>
-            <div class="heatmap" id="heatmap"></div>
-          </div>
-          <div class="analytics-card full-width">
-            <div class="ac-title"><i class="ti ti-books"></i> Topics completed</div>
-            <div class="topics-list" id="topics-list"></div>
-          </div>
-        </div>
-      </div>
-
+<!-- LOGOUT MODAL -->
+<div class="overlay" id="logoutOverlay">
+  <div class="modal modal-sm">
+    <div class="logout-icon"><i class="ti ti-logout"></i></div>
+    <h2>Logging out?</h2>
+    <p>You'll need to sign in again to access your Nexora dashboard.</p>
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeLogout()">Cancel</button>
+      <button class="confirm-logout-btn" onclick="doLogout()">Yes, Logout</button>
     </div>
   </div>
 </div>
 
-<script src="app.js"></script>
+<!-- UPGRADE MODAL -->
+<div class="overlay" id="upgradeOverlay">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div><h2>Choose Your Plan ✨</h2><p>Upgrade to unlock unlimited AI power</p></div>
+      <button class="close-btn" onclick="closeUpgradeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="pricing-grid">
+        <!-- FREE -->
+        <div class="pricing-card" id="freePricingCard">
+          <h3>Free</h3>
+          <div class="price-tag">₹0<span>/mo</span></div>
+          <p class="price-desc">Perfect to get started</p>
+          <ul class="feat-list">
+            <li><i class="ti ti-check"></i> 20 Chat messages/day</li>
+            <li><i class="ti ti-check"></i> 10 Notes per day</li>
+            <li><i class="ti ti-check"></i> 5 Images per day</li>
+            <li><i class="ti ti-check"></i> 3 Mock tests per day</li>
+            <li><i class="ti ti-check"></i> Streak tracking</li>
+            <li class="no"><i class="ti ti-x"></i> Priority AI responses</li>
+            <li class="no"><i class="ti ti-x"></i> Advanced resume templates</li>
+            <li class="no"><i class="ti ti-x"></i> No watermark on images</li>
+          </ul>
+          <button class="plan-btn" id="freePlanBtn" onclick="selectPlan('free')" disabled>Current Plan</button>
+        </div>
+        <!-- PRO -->
+        <div class="pricing-card hot" id="proPricingCard">
+          <div class="hot-badge">🔥 Most Popular</div>
+          <h3>Pro</h3>
+          <div class="price-tag">₹299<span>/mo</span></div>
+          <p class="price-desc">For serious learners</p>
+          <ul class="feat-list">
+            <li><i class="ti ti-check"></i> Unlimited chat messages</li>
+            <li><i class="ti ti-check"></i> Unlimited notes</li>
+            <li><i class="ti ti-check"></i> 50 images per day</li>
+            <li><i class="ti ti-check"></i> Unlimited mock tests</li>
+            <li><i class="ti ti-check"></i> Priority AI responses</li>
+            <li><i class="ti ti-check"></i> Advanced resume templates</li>
+            <li><i class="ti ti-check"></i> No watermark on images</li>
+            <li><i class="ti ti-check"></i> Streak shields (2/month)</li>
+          </ul>
+          <button class="plan-btn upgrade" id="proPlanBtn" onclick="selectPlan('pro')">Upgrade to Pro →</button>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:16px">🔒 Secure payment · Cancel anytime · No hidden charges</p>
+    </div>
+  </div>
+</div>
+
+<!-- STREAK MODAL -->
+<div class="overlay" id="streakOverlay">
+  <div class="modal modal-lg" style="max-width:480px">
+    <div class="modal-head">
+      <div><h2>🔥 Your Streak</h2><p>Keep showing up every day!</p></div>
+      <button class="close-btn" onclick="closeStreakModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="streak-modal-body">
+      <div class="streak-big">
+        <span class="streak-big-flame">🔥</span>
+        <div class="streak-big-count" id="modalStreakCount">0</div>
+        <div class="streak-big-label">day streak</div>
+      </div>
+      <p style="font-size:13px;font-weight:700;margin-bottom:10px">This Week</p>
+      <div class="week-grid" id="streakWeekGrid"></div>
+      <div class="streak-tip" id="streakTip">Log in every day and use any AI feature to keep your streak alive!</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let currentUser = null;
+let darkMode = false;
+let chatHistory = [];
+let userPlan = 'free'; // 'free' or 'pro'
+let usage = { chat: 0, notes: 0, images: 0 };
+const LIMITS = { free: { chat:20, notes:10, images:5 }, pro: { chat:99999, notes:99999, images:50 } };
+
+const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+const API_URL = 'https://api.anthropic.com/v1/messages';
+
+// ===== AUTH =====
+function switchTab(tab, btn) {
+  document.getElementById('loginForm').style.display = tab==='login'?'block':'none';
+  document.getElementById('signupForm').style.display = tab==='signup'?'block':'none';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  else document.querySelectorAll('.tab-btn')[tab==='login'?0:1].classList.add('active');
+  document.getElementById('bottomToggle').innerHTML = tab==='login'
+    ? `Don't have an account? <a onclick="switchTab('signup',null)">Sign up free</a>`
+    : `Already have an account? <a onclick="switchTab('login',null)">Sign in</a>`;
+}
+
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  const show = inp.type==='password';
+  inp.type = show?'text':'password';
+  btn.innerHTML = `<i class="ti ti-eye${show?'-off':''}"></i>`;
+}
+
+function validateEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  let ok = true;
+  document.getElementById('loginEmailErr').style.display='none';
+  document.getElementById('loginPassErr').style.display='none';
+  if(!validateEmail(email)){document.getElementById('loginEmailErr').style.display='block';ok=false;}
+  if(pass.length<6){document.getElementById('loginPassErr').style.display='block';ok=false;}
+  if(!ok) return;
+  const users = JSON.parse(localStorage.getItem('nexora-users')||'{}');
+  if(!users[email]){showToast('Account not found. Please sign up.','warning');return;}
+  if(users[email].password!==btoa(pass)){showToast('Incorrect password.','danger');return;}
+  currentUser = {email, name:users[email].name};
+  if(document.getElementById('rememberMe').checked) localStorage.setItem('nexora-session',JSON.stringify(currentUser));
+  loadUserData();
+  enterApp();
+}
+
+function doSignup() {
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const pass = document.getElementById('signupPass').value;
+  let ok = true;
+  document.getElementById('signupNameErr').style.display='none';
+  document.getElementById('signupEmailErr').style.display='none';
+  document.getElementById('signupPassErr').style.display='none';
+  if(!name){document.getElementById('signupNameErr').style.display='block';ok=false;}
+  if(!validateEmail(email)){document.getElementById('signupEmailErr').style.display='block';ok=false;}
+  if(pass.length<6){document.getElementById('signupPassErr').style.display='block';ok=false;}
+  if(!ok) return;
+  const users = JSON.parse(localStorage.getItem('nexora-users')||'{}');
+  if(users[email]){showToast('Email already registered.','warning');return;}
+  users[email]={name, password:btoa(pass)};
+  localStorage.setItem('nexora-users',JSON.stringify(users));
+  currentUser={email,name};
+  localStorage.setItem('nexora-session',JSON.stringify(currentUser));
+  loadUserData();
+  enterApp();
+}
+
+function demoLogin() {
+  currentUser={email:'demo@nexora.ai',name:'Demo User'};
+  loadUserData();
+  enterApp();
+  showToast('Signed in as Demo User','success');
+}
+
+function loadUserData() {
+  const key = 'nexora-data-'+currentUser.email;
+  const saved = JSON.parse(localStorage.getItem(key)||'null');
+  if(saved) {
+    userPlan = saved.plan||'free';
+    usage = saved.usage||{chat:0,notes:0,images:0};
+  } else {
+    userPlan='free'; usage={chat:0,notes:0,images:0};
+  }
+  // reset usage daily
+  const today = new Date().toDateString();
+  const lastDay = localStorage.getItem('nexora-lastday-'+currentUser.email);
+  if(lastDay !== today) {
+    usage={chat:0,notes:0,images:0};
+    localStorage.setItem('nexora-lastday-'+currentUser.email, today);
+    saveUserData();
+  }
+}
+
+function saveUserData() {
+  if(!currentUser) return;
+  const key='nexora-data-'+currentUser.email;
+  localStorage.setItem(key, JSON.stringify({plan:userPlan, usage}));
+}
+
+function enterApp() {
+  document.getElementById('loginPage').classList.remove('show');
+  document.getElementById('appPage').classList.add('show');
+  const first = currentUser.name.split(' ')[0];
+  document.getElementById('pageSubtitle').innerHTML=`Welcome back, <strong>${first}</strong>!`;
+  document.getElementById('heroGreeting').textContent=`Good to see you, ${first}! 🚀`;
+  const initials = currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('profileAvatar').textContent=initials;
+  document.getElementById('settingsEmail').textContent=currentUser.email;
+  document.getElementById('settingsName').textContent=currentUser.name;
+  updateStreakUI();
+  updatePlanUI();
+  updateUsageUI();
+  updateDailyStreak();
+  loadCharts();
+  showToast(`Welcome, ${first}! 🚀`,'success');
+}
+
+// ===== STREAK =====
+function getStreakData() {
+  const key = 'nexora-streak-'+currentUser.email;
+  return JSON.parse(localStorage.getItem(key)||'{"count":0,"lastDate":null,"history":[]}');
+}
+
+function saveStreakData(data) {
+  localStorage.setItem('nexora-streak-'+currentUser.email, JSON.stringify(data));
+}
+
+function updateDailyStreak() {
+  const data = getStreakData();
+  const today = new Date().toDateString();
+  if(data.lastDate===today) return; // already counted today
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  if(data.lastDate===yesterday.toDateString()) {
+    data.count++; // continued streak
+  } else if(data.lastDate!==today) {
+    data.count=1; // reset or new
+  }
+  data.lastDate=today;
+  if(!data.history) data.history=[];
+  data.history.push(today);
+  if(data.history.length>30) data.history=data.history.slice(-30);
+  saveStreakData(data);
+  if(data.count>1) showToast(`🔥 ${data.count} day streak! Keep it up!`,'success');
+}
+
+function updateStreakUI() {
+  const data = getStreakData();
+  const count = data.count||0;
+  // topbar chip
+  document.getElementById('topStreakCount').textContent=count;
+  // sidebar widget count
+  document.getElementById('sidebarStreakCount').textContent=count;
+  // analytics
+  const as = document.getElementById('analyticsStreak');
+  if(as) as.textContent=count;
+  // stat card
+  const ss = document.getElementById('statStreak');
+  if(ss) ss.textContent=count;
+  // sidebar streak days (last 7)
+  const sidebarDays = document.getElementById('sidebarStreakDays');
+  sidebarDays.innerHTML='';
+  const today = new Date().toDateString();
+  for(let i=6;i>=0;i--) {
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const ds=d.toDateString();
+    const done=(data.history||[]).includes(ds);
+    const isToday=ds===today;
+    const el=document.createElement('div');
+    el.className='streak-day'+(done?' done':'')+(isToday?' today':'');
+    el.textContent=['S','M','T','W','T','F','S'][d.getDay()];
+    sidebarDays.appendChild(el);
+  }
+  // modal streak count
+  const msc=document.getElementById('modalStreakCount');
+  if(msc) msc.textContent=count;
+  // week grid in modal
+  buildStreakWeekGrid(data);
+}
+
+function buildStreakWeekGrid(data) {
+  const grid = document.getElementById('streakWeekGrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const today=new Date().toDateString();
+  for(let i=6;i>=0;i--) {
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const ds=d.toDateString();
+    const done=(data.history||[]).includes(ds);
+    const isToday=ds===today;
+    const cell=document.createElement('div');
+    cell.className='week-cell';
+    cell.innerHTML=`<div class="week-cell-day">${days[d.getDay()]}</div><div class="week-cell-dot${done?' done':''}${isToday?' today':''}">${done?'✓':d.getDate()}</div>`;
+    grid.appendChild(cell);
+  }
+  const tip=document.getElementById('streakTip');
+  if(tip) {
+    const count=data.count||0;
+    if(count>=7) tip.textContent=`🏆 Amazing! ${count} day streak. You're on fire!`;
+    else if(count>=3) tip.textContent=`💪 ${count} days strong! Keep the momentum going.`;
+    else if(count>=1) tip.textContent=`🌱 ${count} day streak started! Visit every day to grow it.`;
+    else tip.textContent=`Log in every day and use any AI feature to start your streak!`;
+  }
+}
+
+function openStreakModal() {
+  updateStreakUI();
+  document.getElementById('streakOverlay').classList.add('open');
+}
+function closeStreakModal() { document.getElementById('streakOverlay').classList.remove('open'); }
+
+// ===== PLAN =====
+function updatePlanUI() {
+  const isPro = userPlan==='pro';
+  // sidebar badge
+  const badge = document.getElementById('planBadgeSidebar');
+  badge.className = 'plan-badge-sidebar'+(isPro?' pro':'');
+  document.getElementById('planBadgeName').textContent = isPro?'PRO PLAN':'FREE PLAN';
+  document.getElementById('planBadgeUpgrade').textContent = isPro?'Active':'Upgrade';
+  // plan chip in topbar
+  document.getElementById('topPlanLabel').textContent = isPro?'Pro':'Free';
+  // settings
+  const sp=document.getElementById('settingsPlan');
+  if(sp) sp.textContent=isPro?'Pro ✨':'Free';
+  // dashboard label
+  const ld=document.getElementById('planLabelDash');
+  if(ld) ld.textContent=isPro?'Pro Plan ✨':'Free Plan';
+  // pricing modal btns
+  const freebtn=document.getElementById('freePlanBtn');
+  const probtn=document.getElementById('proPlanBtn');
+  if(freebtn&&probtn) {
+    if(isPro) {
+      freebtn.textContent='Downgrade';freebtn.disabled=false;
+      probtn.textContent='Current Plan ✓';probtn.disabled=true;
+    } else {
+      freebtn.textContent='Current Plan';freebtn.disabled=true;
+      probtn.textContent='Upgrade to Pro →';probtn.disabled=false;
+    }
+  }
+}
+
+function updateUsageUI() {
+  const lim = LIMITS[userPlan];
+  const cp = (v,m) => Math.min((v/m)*100,100).toFixed(0)+'%';
+  document.getElementById('chatUsageLabel').textContent = userPlan==='pro'?`${usage.chat}/∞`:`${usage.chat}/${lim.chat}`;
+  document.getElementById('notesUsageLabel').textContent = userPlan==='pro'?`${usage.notes}/∞`:`${usage.notes}/${lim.notes}`;
+  document.getElementById('imagesUsageLabel').textContent = userPlan==='pro'?`${usage.images}/${lim.images}`:`${usage.images}/${lim.images}`;
+  document.getElementById('chatUsageBar').style.width = cp(usage.chat,lim.chat);
+  document.getElementById('notesUsageBar').style.width = cp(usage.notes,lim.notes);
+  document.getElementById('imagesUsageBar').style.width = cp(usage.images,lim.images);
+  if(usage.images/lim.images>0.8) {
+    document.getElementById('imagesUsageBar').style.background='linear-gradient(90deg,#F59E0B,#EF4444)';
+  }
+  // sidebar mini bar (based on chat usage)
+  document.getElementById('planMiniFill').style.width = cp(usage.chat,lim.chat);
+  document.getElementById('planBadgeLabel').textContent = userPlan==='pro'?`${usage.chat} chats today`:`${usage.chat}/${lim.chat} credits used`;
+}
+
+function checkLimit(type) {
+  const lim=LIMITS[userPlan][type];
+  if(usage[type]>=lim) {
+    showToast(`${type} limit reached! Upgrade to Pro for more.`,'warning');
+    setTimeout(openUpgradeModal,800);
+    return false;
+  }
+  return true;
+}
+
+function bumpUsage(type) {
+  usage[type]++;
+  saveUserData();
+  updateUsageUI();
+}
+
+function selectPlan(plan) {
+  if(plan==='pro') {
+    // simulate payment
+    showToast('🎉 Upgraded to Pro! (demo mode)','success');
+    userPlan='pro';
+    saveUserData();
+    updatePlanUI();
+    updateUsageUI();
+    closeUpgradeModal();
+  } else {
+    userPlan='free';
+    saveUserData();
+    updatePlanUI();
+    updateUsageUI();
+    closeUpgradeModal();
+    showToast('Switched to Free plan','info');
+  }
+}
+
+function openUpgradeModal() {
+  updatePlanUI();
+  document.getElementById('upgradeOverlay').classList.add('open');
+}
+function closeUpgradeModal() { document.getElementById('upgradeOverlay').classList.remove('open'); }
+
+// ===== PANEL + SIDEBAR =====
+function showPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const t=document.getElementById(id);
+  if(t) t.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const titles={dashboard:'Dashboard',chat:'AI Chat',notes:'Notes Generator',imagegen:'Image Generator',resume:'Resume Builder',mocktest:'Mock Test',planner:'Study Planner',analytics:'Analytics',settings:'Settings'};
+  document.getElementById('pageTitle').textContent=titles[id]||id;
+  if(id==='analytics') loadAnalyticsCharts();
+  if(window.innerWidth<=992) document.getElementById('sidebar').classList.remove('show');
+}
+
+function toggleSidebar() {
+  const sb=document.getElementById('sidebar');
+  const mn=document.getElementById('mainArea');
+  if(window.innerWidth>992){sb.classList.toggle('hidden');mn.classList.toggle('full');}
+  else sb.classList.toggle('show');
+}
+
+// ===== THEME =====
+function toggleTheme() {
+  darkMode=!darkMode;
+  document.body.classList.toggle('dark',darkMode);
+  document.getElementById('themeIcon').className=darkMode?'ti ti-moon':'ti ti-sun';
+  localStorage.setItem('nexora-theme',darkMode?'dark':'light');
+}
+
+// ===== LOGOUT =====
+function openLogout(){document.getElementById('logoutOverlay').classList.add('open');}
+function closeLogout(){document.getElementById('logoutOverlay').classList.remove('open');}
+function doLogout() {
+  localStorage.removeItem('nexora-session');
+  currentUser=null; chatHistory=[]; userPlan='free'; usage={chat:0,notes:0,images:0};
+  document.getElementById('chatMessages').innerHTML='<div class="ai-message">👋 Hi! I\'m your Nexora AI assistant. How can I help you today?</div>';
+  document.getElementById('appPage').classList.remove('show');
+  document.getElementById('loginPage').classList.add('show');
+  closeLogout();
+  showPanel('dashboard',document.querySelector('.nav-btn'));
+  showToast('Logged out successfully.','success');
+}
+
+// ===== CLAUDE API =====
+async function callClaude(systemPrompt, userMessage) {
+  const msgs = userMessage==='__chat__'
+    ? chatHistory
+    : [{role:'user',content:userMessage}];
+  const res = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:CLAUDE_MODEL,max_tokens:1000,system:systemPrompt,messages:msgs})});
+  const data = await res.json();
+  if(data.error) throw new Error(data.error.message);
+  return data.content.map(b=>b.text||'').join('');
+}
+
+// ===== CHAT =====
+async function sendMessage() {
+  const input=document.getElementById('chatInput');
+  const chat=document.getElementById('chatMessages');
+  const text=input.value.trim();
+  if(!text) return;
+  if(!checkLimit('chat')) return;
+
+  const ud=document.createElement('div');ud.className='user-message';ud.textContent=text;chat.appendChild(ud);
+  input.value='';chat.scrollTop=chat.scrollHeight;
+  chatHistory.push({role:'user',content:text});
+
+  const loader=document.createElement('div');loader.className='ai-message';loader.innerHTML='<div class="loader" style="border-color:rgba(108,99,255,.2);border-top-color:var(--primary)"></div>';
+  chat.appendChild(loader);chat.scrollTop=chat.scrollHeight;
+
+  try {
+    const reply=await callClaude('You are Nexora AI, a helpful, friendly study and career assistant. Be concise and clear.','__chat__');
+    chatHistory.push({role:'assistant',content:reply});
+    loader.innerHTML=reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    bumpUsage('chat');
+  } catch(e) {
+    loader.innerHTML='❌ Error: '+e.message;
+  }
+  chat.scrollTop=chat.scrollHeight;
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement.id==='chatInput')sendMessage();});
+
+// ===== NOTES =====
+async function generateNotes() {
+  const topic=document.getElementById('notesTopic').value.trim();
+  const style=document.getElementById('notesStyle').value;
+  const btn=document.getElementById('notesBtn');
+  const out=document.getElementById('notesOutput');
+  if(!topic){showToast('Please enter a topic','warning');return;}
+  if(!checkLimit('notes')) return;
+
+  btn.disabled=true;btn.innerHTML='<div class="loader"></div> Generating...';
+  out.classList.remove('empty');out.textContent='Generating notes...';
+  const styleMap={detailed:'comprehensive detailed notes',bullet:'concise bullet points',summary:'a brief 200-word summary',exam:'exam-focused key points'};
+  try {
+    const r=await callClaude('You are an expert educator. Generate clear, well-structured notes using headings and bullet points.',`Generate ${styleMap[style]} on: ${topic}`);
+    out.innerHTML=r.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^### (.*)/gm,'<h4>$1</h4>').replace(/^## (.*)/gm,'<h3>$1</h3>').replace(/^# (.*)/gm,'<h2>$1</h2>');
+    bumpUsage('notes');
+    showToast('Notes generated!','success');
+  } catch(e){out.textContent='Error: '+e.message;showToast('Failed','danger');}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-wand"></i> Generate Notes';
+}
+
+// ===== IMAGE GEN =====
+function addTag(tag){const i=document.getElementById('imgPrompt');i.value=i.value?i.value+', '+tag:tag;}
+
+async function generateImage() {
+  const prompt=document.getElementById('imgPrompt').value.trim();
+  const style=document.getElementById('imgStyle').value;
+  const btn=document.getElementById('imgBtn');
+  const out=document.getElementById('imgOutput');
+  if(!prompt){showToast('Please describe the image','warning');return;}
+  if(!checkLimit('images')) return;
+
+  btn.disabled=true;btn.innerHTML='<div class="loader"></div> Generating...';
+  out.innerHTML='<div class="output-box" style="text-align:center;padding:28px;color:var(--text-light)"><i class="ti ti-photo-ai" style="font-size:38px;color:var(--primary);display:block;margin-bottom:10px"></i>Creating your image...</div>';
+
+  const stylePrompts={realistic:'photorealistic, hyperdetailed, 8k',artistic:'oil painting, artistic, painterly',anime:'anime style, manga, vibrant','3d':'3D render, octane render, studio lighting',sketch:'pencil sketch, line art'};
+  const fullPrompt=encodeURIComponent(`${prompt}, ${stylePrompts[style]}`);
+  const seed=Math.floor(Math.random()*1000000);
+  const imgUrl=`https://image.pollinations.ai/prompt/${fullPrompt}?width=768&height=512&seed=${seed}&nologo=true`;
+
+  const img=new Image();
+  img.onload=()=>{
+    out.innerHTML='';
+    const wrap=document.createElement('div');wrap.className='img-result';
+    img.style.cssText='width:100%;display:block;border-radius:12px';wrap.appendChild(img);out.appendChild(wrap);
+    const dl=document.createElement('a');dl.href=imgUrl;dl.target='_blank';
+    dl.innerHTML='<button class="run-btn" style="margin-top:10px"><i class="ti ti-download"></i> Open Full Image</button>';
+    out.appendChild(dl);
+    bumpUsage('images');
+    showToast('Image generated!','success');
+    btn.disabled=false;btn.innerHTML='<i class="ti ti-photo"></i> Generate Image';
+  };
+  img.onerror=()=>{
+    out.innerHTML='<div class="output-box empty">Image generation failed. Try a different prompt.</div>';
+    btn.disabled=false;btn.innerHTML='<i class="ti ti-photo"></i> Generate Image';
+    showToast('Image failed','danger');
+  };
+  img.src=imgUrl;
+}
+
+// ===== RESUME =====
+async function generateResume() {
+  const name=document.getElementById('rName').value.trim();
+  const title=document.getElementById('rTitle').value.trim();
+  const btn=document.getElementById('resumeBtn');
+  const out=document.getElementById('resumeOutput');
+  if(!name||!title){showToast('Name and job title required','warning');return;}
+
+  btn.disabled=true;btn.innerHTML='<div class="loader"></div> Building...';
+  out.classList.remove('empty');out.textContent='Building resume...';
+
+  const prompt=`Create a professional resume:
+Name: ${name} | Title: ${title}
+Email: ${document.getElementById('rEmail').value} | Phone: ${document.getElementById('rPhone').value}
+Location: ${document.getElementById('rLocation').value} | LinkedIn: ${document.getElementById('rLinkedIn').value}
+Summary: ${document.getElementById('rSummary').value}
+Experience: ${document.getElementById('rExperience').value}
+Education: ${document.getElementById('rEducation').value}
+Skills: ${document.getElementById('rSkills').value}
+Write a complete ATS-friendly professional resume with all sections.`;
+
+  try {
+    const r=await callClaude('You are a professional resume writer. Create polished, ATS-optimized resumes.',prompt);
+    out.innerHTML='<div class="resume-preview">'+r.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^# (.*)/gm,'<h3>$1</h3>').replace(/^## (.*)/gm,'<h4>$1</h4>')+'</div>';
+    showToast('Resume generated!','success');
+  } catch(e){out.textContent='Error: '+e.message;showToast('Failed','danger');}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-wand"></i> Generate Resume';
+}
+
+// ===== MOCK TEST =====
+async function generateTest() {
+  const subject=document.getElementById('testSubject').value.trim();
+  const difficulty=document.getElementById('testDifficulty').value;
+  const count=document.getElementById('testCount').value;
+  const btn=document.getElementById('testBtn');
+  const out=document.getElementById('testOutput');
+  if(!subject){showToast('Please enter a subject','warning');return;}
+
+  btn.disabled=true;btn.innerHTML='<div class="loader"></div> Generating...';
+  out.classList.remove('empty');out.textContent='Generating test...';
+  try {
+    const r=await callClaude('You are an expert educator. Create well-structured MCQ tests.',`Generate a ${difficulty} difficulty mock test with ${count} MCQ questions on: ${subject}. Include 4 options (A-D) and list correct answers at the end.`);
+    out.innerHTML=r.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    showToast('Test generated!','success');
+  } catch(e){out.textContent='Error: '+e.message;showToast('Failed','danger');}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-wand"></i> Generate Test';
+}
+
+// ===== PLANNER =====
+async function createPlan() {
+  const goal=document.getElementById('planGoal').value.trim();
+  const btn=document.getElementById('planBtn');
+  const out=document.getElementById('planOutput');
+  if(!goal){showToast('Please enter your goal','warning');return;}
+
+  btn.disabled=true;btn.innerHTML='<div class="loader"></div> Planning...';
+  out.classList.remove('empty');out.textContent='Creating study plan...';
+
+  const prompt=`Create a detailed study plan:
+Goal: ${goal}
+Start: ${document.getElementById('planStartDate').value||'Today'} | End: ${document.getElementById('planEndDate').value||'3 months'}
+Hours/day: ${document.getElementById('planHours').value}
+Subjects: ${document.getElementById('planSubjects').value||'all relevant'}
+Create a week-by-week plan with daily schedules, priorities, and milestones.`;
+
+  try {
+    const r=await callClaude('You are an expert study coach. Create personalized, realistic study plans.',prompt);
+    out.innerHTML=r.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^### (.*)/gm,'<h4>$1</h4>').replace(/^## (.*)/gm,'<h3>$1</h3>');
+    showToast('Plan created!','success');
+  } catch(e){out.textContent='Error: '+e.message;showToast('Failed','danger');}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-wand"></i> Create Plan';
+}
+
+// ===== CHARTS =====
+let chartsLoaded=false;
+function loadCharts(){
+  if(chartsLoaded) return;chartsLoaded=true;
+  const w=document.getElementById('weeklyChart');
+  if(w) new Chart(w,{type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[{label:'Activity',data:[2,3,4,5,3,6,7],borderColor:'#6C63FF',backgroundColor:'rgba(108,99,255,.1)',tension:.4,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+  const u=document.getElementById('usageChart');
+  if(u) new Chart(u,{type:'doughnut',data:{labels:['Chat','Notes','Images','Tests'],datasets:[{data:[35,25,20,20],backgroundColor:['#6C63FF','#8B5CF6','#EC4899','#10B981']}]},options:{responsive:true}});
+}
+let analyticsLoaded=false;
+function loadAnalyticsCharts(){
+  if(analyticsLoaded) return;analyticsLoaded=true;
+  const m=document.getElementById('monthlyChart');
+  if(m) new Chart(m,{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],datasets:[{label:'Hours',data:[28,35,42,38,50,47],backgroundColor:'rgba(108,99,255,.7)',borderRadius:7}]},options:{responsive:true}});
+  const s=document.getElementById('subjectChart');
+  if(s) new Chart(s,{type:'radar',data:{labels:['Maths','Physics','Chemistry','English','CS'],datasets:[{label:'Score %',data:[85,72,90,78,95],borderColor:'#6C63FF',backgroundColor:'rgba(108,99,255,.1)'}]},options:{responsive:true}});
+}
+
+// ===== TOAST =====
+function showToast(msg,type='info'){
+  const icons={success:'ti-circle-check',warning:'ti-alert-triangle',danger:'ti-circle-x',info:'ti-info-circle'};
+  const colors={success:'var(--success)',warning:'var(--warning)',danger:'var(--danger)',info:'var(--primary)'};
+  const t=document.createElement('div');t.className='toast';
+  t.innerHTML=`<i class="ti ${icons[type]}" style="color:${colors[type]}"></i> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(()=>t.classList.add('show'),50);
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},3000);
+}
+
+// ===== INIT =====
+window.addEventListener('load',()=>{
+  const saved=localStorage.getItem('nexora-theme');
+  if(saved==='dark'){darkMode=true;document.body.classList.add('dark');document.getElementById('themeIcon').className='ti ti-moon';}
+  const session=localStorage.getItem('nexora-session');
+  if(session){try{currentUser=JSON.parse(session);loadUserData();enterApp();}catch(e){}}
+  document.getElementById('planStartDate').valueAsDate=new Date();
+  const end=new Date();end.setMonth(end.getMonth()+3);
+  document.getElementById('planEndDate').valueAsDate=end;
+});
+</script>
 </body>
 </html>
