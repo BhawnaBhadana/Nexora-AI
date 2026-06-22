@@ -629,15 +629,7 @@ body.dark .streak-tip{color:#FCD34D}
 
 <script>
 // ===== STATE =====
-let currentUser = null;
-let darkMode = false;
-let chatHistory = [];
-let userPlan = 'free'; // 'free' or 'pro'
-let usage = { chat: 0, notes: 0, images: 0 };
-const LIMITS = { free: { chat:20, notes:10, images:5 }, pro: { chat:99999, notes:99999, images:50 } };
 
-const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
-const API_URL = 'https://api.anthropic.com/v1/messages';
 
 // ===== AUTH =====
 function switchTab(tab, btn) {
