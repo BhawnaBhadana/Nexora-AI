@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{--primary:#6C63FF;--secondary:#8B5CF6;--bg:#F4F7FE;--card:#FFFFFF;--text:#111827;--text-light:#6B7280;--border:#E5E7EB;--success:#10B981;--warning:#F59E0B;--danger:#EF4444;--gold:#F59E0B;--shadow:0 10px 30px rgba(0,0,0,.08)}
 body.dark{--bg:#0F172A;--card:#1E293B;--text:#F8FAFC;--text-light:#94A3B8;--border:#334155}
@@ -488,6 +489,7 @@ body.dark .streak-tip{color:#FCD34D}
         <button class="run-btn" id="resumeBtn" onclick="generateResume()"><i class="ti ti-wand"></i> Generate Resume</button>
         <div class="output-box empty" id="resumeOutput">Your AI-crafted resume will appear here...</div>
         <div id="resumeStyled" style="display:none"></div>
+        <button class="run-btn" id="resumeDownloadBtn" onclick="downloadResumePdf()" style="display:none;background:linear-gradient(135deg,var(--success),#059669)"><i class="ti ti-download"></i> Download PDF</button>
       </div>
     </div>
 

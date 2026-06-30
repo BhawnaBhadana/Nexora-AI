@@ -805,7 +805,35 @@ function renderAtsResult(data) {
   `;
 }
 
-/* ---------- ATS-styled resume rendering (for generateResume) ---------- */
+function downloadResumePdf() {
+  // Prefer the styled version if it's visible, else fall back to plain output box
+  const styled = document.getElementById('resumeStyled');
+  const plain = document.getElementById('resumeOutput');
+  const target = (styled && styled.style.display !== 'none' && styled.innerHTML.trim())
+    ? styled
+    : plain;
+
+  if (!target || !target.innerText.trim() || plain.classList.contains('empty')) {
+    showToast('Generate a resume first', 'error');
+    return;
+  }
+
+  const opt = {
+    margin: 10,
+    filename: 'resume.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(target).save();
+}
+
+// Call this at the end of your existing generateResume() success handler,
+// right after you populate #resumeOutput (and/or #resumeStyled):
+function showResumeDownloadBtn() {
+  document.getElementById('resumeDownloadBtn').style.display = 'inline-flex';
+}
 // Call renderStyledResume(resumeData) after your existing generateResume()
 // gets a structured JSON response back from the backend (instead of, or
 // alongside, the plain text in #resumeOutput).
