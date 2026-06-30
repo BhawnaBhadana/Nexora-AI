@@ -684,3 +684,162 @@ window.addEventListener("load", () => {
   const end = new Date(); end.setMonth(end.getMonth() + 3);
   document.getElementById("planEndDate").valueAsDate = end;
 });
+
+/* ============================================================
+   ATS SCORE CHECKER + ATS-STYLED RESUME OUTPUT
+   Paste these functions into your existing app.js
+   Assumes you already have: API_BASE (or similar base URL),
+   authToken / getToken(), showToast(), and a working fetch
+   pattern like your generateResume() function.
+   ============================================================ */
+
+let atsUploadedFile = null;
+
+function handleAtsFileUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const allowed = ['application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+  if (!allowed.includes(file.type)) {
+    showToast('Please upload a PDF or DOCX file', 'error');
+    e.target.value = '';
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('File too large (max 5MB)', 'error');
+    e.target.value = '';
+    return;
+  }
+  atsUploadedFile = file;
+  document.getElementById('atsFileName').textContent = file.name;
+}
+
+async function checkAtsScore() {
+  const resumeText = document.getElementById('atsResumeText').value.trim();
+  const jobDesc = document.getElementById('atsJobDesc').value.trim();
+  const out = document.getElementById('atsOutput');
+  const btn = document.getElementById('atsBtn');
+
+  if (!resumeText && !atsUploadedFile) {
+    showToast('Paste resume text or upload a file', 'error');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span> Analyzing...';
+  out.classList.remove('empty');
+  out.innerHTML = 'Scanning your resume against ATS rules...';
+
+  try {
+    let res;
+    if (atsUploadedFile) {
+      const formData = new FormData();
+      formData.append('resumeFile', atsUploadedFile);
+      if (resumeText) formData.append('resumeText', resumeText);
+      if (jobDesc) formData.append('jobDescription', jobDesc);
+
+      res = await fetch(`${API_BASE}/api/ats/score`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${getToken()}` },
+        body: formData
+      });
+    } else {
+      res = await fetch(`${API_BASE}/api/ats/score`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`
+        },
+        body: JSON.stringify({ resumeText, jobDescription: jobDesc })
+      });
+    }
+
+    if (!res.ok) throw new Error('Request failed');
+    const data = await res.json();
+    renderAtsResult(data);
+  } catch (err) {
+    out.innerHTML = 'Something went wrong while checking your resume. Please try again.';
+    showToast('ATS check failed', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-wand"></i> Check ATS Score';
+  }
+}
+
+function renderAtsResult(data) {
+  // Expected shape from backend:
+  // { overallScore, verdict, breakdown: {formatting, keywords, sections, readability},
+  //   strengths: [...], issues: [...], missingKeywords: [...] }
+  const out = document.getElementById('atsOutput');
+  const score = data.overallScore ?? 0;
+  const color = score >= 80 ? 'var(--success)' : score >= 60 ? 'var(--warning)' : 'var(--danger)';
+
+  const bars = Object.entries(data.breakdown || {}).map(([key, val]) => `
+    <div class="ats-bar-row">
+      <div class="ats-bar-label">${key.charAt(0).toUpperCase() + key.slice(1)}</div>
+      <div class="ats-bar-track"><div class="ats-bar-fill" style="width:${val}%"></div></div>
+      <div class="ats-bar-val">${val}%</div>
+    </div>`).join('');
+
+  const strengths = (data.strengths || []).map(s => `<li>${s}</li>`).join('');
+  const issues = (data.issues || []).map(s => `<li>${s}</li>`).join('');
+  const missing = (data.missingKeywords || []).map(k => `<span class="tag">${k}</span>`).join('');
+
+  out.innerHTML = `
+    <div class="ats-score-wrap">
+      <div class="ats-score-circle" style="--score:${score};--score-color:${color}">
+        <div class="ats-score-circle-inner">
+          <div class="ats-score-num">${score}</div>
+          <div class="ats-score-label">/ 100</div>
+        </div>
+      </div>
+      <div class="ats-verdict">
+        ${data.verdict || ''}
+        <p>${score >= 80 ? 'Strong ATS compatibility' : score >= 60 ? 'Decent, but needs improvement' : 'High risk of being filtered out'}</p>
+      </div>
+    </div>
+    <div class="ats-breakdown">${bars}</div>
+    ${strengths ? `<p class="ats-section-title">✅ Strengths</p><ul class="ats-list">${strengths}</ul>` : ''}
+    ${issues ? `<p class="ats-section-title">⚠️ Issues to fix</p><ul class="ats-list">${issues}</ul>` : ''}
+    ${missing ? `<p class="ats-section-title">🔑 Missing keywords</p><div class="tag-row">${missing}</div>` : ''}
+  `;
+}
+
+/* ---------- ATS-styled resume rendering (for generateResume) ---------- */
+// Call renderStyledResume(resumeData) after your existing generateResume()
+// gets a structured JSON response back from the backend (instead of, or
+// alongside, the plain text in #resumeOutput).
+
+function renderStyledResume(data) {
+  // Expected shape: { name, title, email, phone, location, linkedin,
+  //   summary, experience: [{role, company, duration, points:[]}],
+  //   education: [{degree, institution, year}], skills: [] }
+  const styledBox = document.getElementById('resumeStyled');
+  styledBox.style.display = 'block';
+
+  const exp = (data.experience || []).map(e => `
+    <p><strong>${e.role}</strong> — ${e.company} <span style="float:right;color:#777">${e.duration}</span></p>
+    <ul>${(e.points || []).map(p => `<li>${p}</li>`).join('')}</ul>
+  `).join('');
+
+  const edu = (data.education || []).map(e => `
+    <p><strong>${e.degree}</strong>, ${e.institution} <span style="float:right;color:#777">${e.year}</span></p>
+  `).join('');
+
+  styledBox.innerHTML = `
+    <div class="resume-styled">
+      <h1>${data.name || ''}</h1>
+      <div class="r-role">${data.title || ''}</div>
+      <div class="r-contact">
+        ${data.email ? `<span><i class="ti ti-mail"></i> ${data.email}</span>` : ''}
+        ${data.phone ? `<span><i class="ti ti-phone"></i> ${data.phone}</span>` : ''}
+        ${data.location ? `<span><i class="ti ti-map-pin"></i> ${data.location}</span>` : ''}
+        ${data.linkedin ? `<span><i class="ti ti-brand-linkedin"></i> ${data.linkedin}</span>` : ''}
+      </div>
+      ${data.summary ? `<h2>Summary</h2><p>${data.summary}</p>` : ''}
+      ${exp ? `<h2>Experience</h2>${exp}` : ''}
+      ${edu ? `<h2>Education</h2>${edu}` : ''}
+      ${data.skills?.length ? `<h2>Skills</h2><p>${data.skills.join(' • ')}</p>` : ''}
+    </div>
+  `;
+}

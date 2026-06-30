@@ -153,6 +153,28 @@ body.dark .sidebar{background:rgba(30,41,59,.92)}
 .chat-foot input:focus{border-color:var(--primary)}
 .chat-foot button{width:42px;height:42px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;border-radius:11px;color:white;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .resume-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ats-score-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:14px}
+.ats-score-circle{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;flex-shrink:0;background:conic-gradient(var(--score-color,var(--primary)) calc(var(--score,0)*1%),var(--border) 0)}
+.ats-score-circle-inner{width:88px;height:88px;border-radius:50%;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ats-score-num{font-size:26px;font-weight:900}
+.ats-score-label{font-size:10px;color:var(--text-light);font-weight:600}
+.ats-verdict{font-size:14px;font-weight:700}
+.ats-verdict p{font-size:12.5px;color:var(--text-light);font-weight:500;margin-top:4px}
+.ats-breakdown{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.ats-bar-row{display:flex;align-items:center;gap:10px}
+.ats-bar-label{font-size:12.5px;font-weight:600;width:130px;flex-shrink:0}
+.ats-bar-track{flex:1;height:8px;border-radius:100px;background:var(--border);overflow:hidden}
+.ats-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--primary),var(--secondary))}
+.ats-bar-val{font-size:12px;font-weight:700;width:34px;text-align:right;flex-shrink:0}
+.ats-list{margin:0;padding-left:18px;font-size:13px;line-height:1.8}
+.ats-section-title{font-size:13.5px;font-weight:700;margin:14px 0 6px}
+.resume-styled{background:#fff;color:#1a1a1a;border-radius:12px;padding:34px;font-family:'Inter',sans-serif;line-height:1.55;max-width:720px;margin:0 auto;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.resume-styled h1{font-size:24px;font-weight:800;margin-bottom:2px}
+.resume-styled .r-role{font-size:13.5px;color:#555;font-weight:600;margin-bottom:8px}
+.resume-styled .r-contact{font-size:11.5px;color:#666;display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;border-bottom:2px solid var(--primary);padding-bottom:14px}
+.resume-styled h2{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--primary);margin:16px 0 6px;border-bottom:1px solid #e5e7eb;padding-bottom:4px}
+.resume-styled p,.resume-styled li{font-size:12.5px;color:#333}
+.resume-styled ul{padding-left:18px;margin-top:4px}
 .resume-preview{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px;line-height:1.7;font-size:13.5px}
 .img-result{margin-top:10px;border-radius:11px;overflow:hidden;border:1px solid var(--border)}
 .img-result img{width:100%;display:block}
@@ -317,6 +339,7 @@ body.dark .streak-tip{color:#FCD34D}
     <button class="nav-btn" onclick="showPanel('notes',this)"><i class="ti ti-notes"></i> Notes Generator</button>
     <button class="nav-btn" onclick="showPanel('imagegen',this)"><i class="ti ti-photo-ai"></i> Image Generator</button>
     <button class="nav-btn" onclick="showPanel('resume',this)"><i class="ti ti-id-badge"></i> Resume Builder</button>
+    <button class="nav-btn" onclick="showPanel('atschecker',this)"><i class="ti ti-shield-check"></i> ATS Score Checker</button>
     <button class="nav-btn" onclick="showPanel('mocktest',this)"><i class="ti ti-checklist"></i> Mock Test</button>
     <button class="nav-btn" onclick="showPanel('planner',this)"><i class="ti ti-calendar"></i> Study Planner</button>
     <button class="nav-btn" onclick="showPanel('analytics',this)"><i class="ti ti-chart-bar"></i> Analytics</button>
@@ -464,6 +487,26 @@ body.dark .streak-tip{color:#FCD34D}
         <textarea id="rSkills" placeholder="Skills: Python, React, Machine Learning..."></textarea>
         <button class="run-btn" id="resumeBtn" onclick="generateResume()"><i class="ti ti-wand"></i> Generate Resume</button>
         <div class="output-box empty" id="resumeOutput">Your AI-crafted resume will appear here...</div>
+        <div id="resumeStyled" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- ATS SCORE CHECKER -->
+    <div class="panel" id="atschecker">
+      <div class="tool-card">
+        <h2><i class="ti ti-shield-check" style="color:var(--primary)"></i> ATS Score Checker</h2>
+        <p class="desc">Paste your resume text or upload a file to get an instant ATS compatibility score.</p>
+        <textarea id="atsResumeText" placeholder="Paste your resume text here..." style="min-height:160px"></textarea>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <label class="social-btn" style="flex:none;cursor:pointer;padding:10px 16px">
+            <i class="ti ti-upload"></i> Upload PDF/DOCX
+            <input type="file" id="atsFileInput" accept=".pdf,.docx" style="display:none" onchange="handleAtsFileUpload(event)">
+          </label>
+          <span id="atsFileName" style="font-size:12.5px;color:var(--text-light)"></span>
+        </div>
+        <textarea id="atsJobDesc" placeholder="Paste target job description (optional, improves accuracy)..."></textarea>
+        <button class="run-btn" id="atsBtn" onclick="checkAtsScore()"><i class="ti ti-wand"></i> Check ATS Score</button>
+        <div class="output-box empty" id="atsOutput">Your ATS score and feedback will appear here...</div>
       </div>
     </div>
 
