@@ -1,12 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const Groq = require("groq-sdk");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const multer = require("multer");
 const pdfParse = require("pdf-parse");
 
+// ─── Clients ───────────────────────────────────────────────────────────────
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
+// ─── GROQ: Text Chat (non-streaming) ──────────────────────────────────────
 router.post("/ask", async (req, res) => {
   try {
     const { system, message } = req.body;
@@ -24,6 +28,7 @@ router.post("/ask", async (req, res) => {
   }
 });
 
+// ─── GROQ: Text Chat (streaming) ──────────────────────────────────────────
 router.post("/stream", async (req, res) => {
   try {
     const { system, message } = req.body;
@@ -44,9 +49,7 @@ router.post("/stream", async (req, res) => {
 
     for await (const chunk of stream) {
       const text = chunk.choices[0]?.delta?.content || "";
-      if (text) {
-        res.write(`data: ${JSON.stringify({ text })}\n\n`);
-      }
+      if (text) res.write(`data: ${JSON.stringify({ text })}\n\n`);
     }
     res.write("data: [DONE]\n\n");
     res.end();
@@ -56,26 +59,69 @@ router.post("/stream", async (req, res) => {
   }
 });
 
+// ─── GEMINI: Image Understanding (Vision) ─────────────────────────────────
 router.post("/image", async (req, res) => {
   try {
     const { imageBase64, mimeType } = req.body;
-    const response = await groq.chat.completions.create({
-      model: "llama-3.2-11b-vision-preview",
-      max_tokens: 1500,
-      messages: [{
-        role: "user",
-        content: [
-          { type: "image_url", image_url: { url: `data:${mimeType};base64,${imageBase64}` } },
-          { type: "text", text: "You are Nexora AI, a study assistant for Indian college students. Analyze this image which contains a question or problem. Solve it step by step. Explain clearly and simply." }
-        ]
-      }]
-    });
-    res.json({ result: response.choices[0].message.content });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const result = await model.generateContent([
+      {
+        inlineData: {
+          mimeType: mimeType || "image/jpeg",
+          data: imageBase64
+        }
+      },
+      {
+        text: "You are Nexora AI, a study assistant for Indian college students. Analyze this image which contains a question or problem. Solve it step by step. Explain clearly and simply."
+      }
+    ]);
+
+    const response = await result.response;
+    res.json({ result: response.text() });
   } catch (err) {
     res.status(500).json({ message: "Image AI error", error: err.message });
   }
 });
 
+// ─── GEMINI: Image Generation ─────────────────────────────────────────────
+router.post("/generate-image", async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    if (!prompt) return res.status(400).json({ message: "Prompt is required" });
+
+    // Gemini imagen-3.0-generate-002 for image generation
+    const model = genAI.getGenerativeModel({ model: "imagen-3.0-generate-002" });
+
+    const result = await model.generateImages({
+      prompt: `${prompt}, high quality, detailed`,
+      number_of_images: 1,
+      safety_filter_level: "block_some",
+      person_generation: "allow_adult",
+      aspect_ratio: "16:9"
+    });
+
+    if (!result.images || result.images.length === 0) {
+      return res.status(500).json({ message: "No image generated" });
+    }
+
+    const imageData = result.images[0].imageBytes;
+    res.json({
+      result: `data:image/png;base64,${imageData}`,
+      type: "base64"
+    });
+  } catch (err) {
+    // Fallback: if Imagen not available on your plan, use Pollinations
+    console.error("Gemini image gen error:", err.message);
+    res.status(500).json({
+      message: "Image generation error",
+      error: err.message,
+      fallback: true
+    });
+  }
+});
+
+// ─── GROQ: Resume Builder ─────────────────────────────────────────────────
 router.post("/resume", async (req, res) => {
   try {
     const { userData } = req.body;
@@ -101,6 +147,7 @@ router.post("/resume", async (req, res) => {
   }
 });
 
+// ─── GROQ: PDF Analyzer ───────────────────────────────────────────────────
 router.post("/pdf", upload.single("pdf"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: "No PDF uploaded" });
