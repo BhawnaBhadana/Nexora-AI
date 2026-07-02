@@ -1,233 +1,428 @@
-# 🧠 Nexora AI — Study Smarter with AI
+# 🚀 Nexora AI
 
-> An AI-powered all-in-one study platform built specifically for Indian college students.
+> **Your Personal AI Study & Career Assistant**
+>
+> An AI-powered all-in-one learning platform designed for college students to study smarter, prepare for placements, build resumes, generate notes, solve doubts, and track progress—all in one place.
 
-![Nexora AI](https://img.shields.io/badge/Nexora_AI-Study_Smarter-7F77DD?style=for-the-badge)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
-![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
-
----
-
-## 🌐 Live Demo
-
-🔗 **[nexora-ai-beta-six.vercel.app](https://nexora-ai-beta-six.vercel.app)**
-
----
-
-## ✨ Features
-
-| Feature | Description |
-|---------|-------------|
-| 💬 **AI Doubt Solver** | Ask any subject question — get instant AI-powered answers |
-| 📝 **AI Notes Generator** | Enter any topic → get clean structured study notes |
-| 💻 **Code Helper** | Write, debug, and understand code with AI assistance |
-| 📄 **Mock Test Generator** | Auto-generate MCQ practice tests with answer keys |
-| 📷 **Image Question Solver** | Upload a photo of any question — AI solves it instantly |
-| 📑 **PDF Solver** | Upload PDF notes — AI summarizes and generates practice questions |
-| 📅 **Study Planner** | AI generates topic-wise study plans, track daily progress |
-| 📋 **AI Resume Builder** | Fill your details → AI builds a professional ATS-friendly resume |
-| 🎯 **Career Guide Chatbot** | India-specific career advice for jobs, internships, salaries |
-| 📊 **Analytics Dashboard** | Weekly charts, heatmaps, streak calendar, accuracy tracking |
-| 🔐 **Auth System** | Secure JWT-based login and registration |
-| 📱 **Mobile Responsive** | Works perfectly on all screen sizes |
+<p align="center">
+  <img src="https://img.shields.io/badge/Version-Beta-blueviolet?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Node.js-20.x-339933?style=for-the-badge&logo=node.js&logoColor=white">
+  <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white">
+  <img src="https://img.shields.io/badge/Express.js-Backend-black?style=for-the-badge&logo=express">
+  <img src="https://img.shields.io/badge/Vercel-Frontend-black?style=for-the-badge&logo=vercel">
+  <img src="https://img.shields.io/badge/Render-Backend-46E3B7?style=for-the-badge&logo=render">
+</p>
 
 ---
 
-## 🛠️ Tech Stack
+# 🌐 Live Demo
 
-### Frontend
-- HTML5, CSS3, Vanilla JavaScript
-- Chart.js — analytics visualizations
+### 🔗 https://nexora-ai-beta-six.vercel.app
+
+---
+
+# 📸 Preview
+
+> Dashboard
+
+![Dashboard](./assets/dashboard.png)
+
+---
+
+# ✨ Features
+
+## 🤖 AI Chat Assistant
+
+- Ask doubts from any subject
+- Instant AI-generated responses
+- Coding assistance
+- Career guidance
+- Learning support
+
+---
+
+## 📝 AI Notes Generator
+
+Generate structured study notes from any topic.
+
+✔ Bullet points
+
+✔ Definitions
+
+✔ Important concepts
+
+✔ Revision-friendly format
+
+---
+
+## 🎨 AI Image Generator
+
+Generate educational or creative images using AI.
+
+---
+
+## 📄 Resume Builder
+
+Build ATS-friendly professional resumes instantly.
+
+Features:
+
+- Modern templates
+- Professional formatting
+- Download ready
+- Placement focused
+
+---
+
+## 🎯 ATS Resume Score Checker
+
+Analyze resumes and receive:
+
+- ATS Compatibility Score
+- Missing Keywords
+- Formatting Suggestions
+- Improvement Tips
+
+---
+
+## 📚 Mock Test Generator
+
+Generate practice MCQs automatically.
+
+Includes:
+
+- Multiple difficulty levels
+- Instant answers
+- Practice sessions
+
+---
+
+## 📅 AI Study Planner
+
+Create personalized study schedules.
+
+Features:
+
+- Daily goals
+- Progress tracking
+- Completion status
+- Productivity planning
+
+---
+
+## 📊 Analytics Dashboard
+
+Track your learning journey.
+
+Includes:
+
+- Weekly Activity Chart
+- Feature Usage Analytics
+- Study Streak
+- Progress Overview
+- Learning Statistics
+
+---
+
+## 🌙 Dark Mode
+
+Modern responsive dark UI for comfortable studying.
+
+---
+
+## 🔐 Authentication
+
+- JWT Authentication
+- Secure Login
+- Registration
+- Protected Routes
+
+---
+
+## 📱 Responsive Design
+
+Works across
+
+- Desktop
+- Laptop
+- Tablet
+- Mobile
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
+
+- HTML5
+- CSS3
+- JavaScript (ES6)
+- Chart.js
 - Tabler Icons
-- Deployed on **Vercel**
+- Responsive UI
 
-### Backend
-- Node.js + Express.js
+---
+
+## Backend
+
+- Node.js
+- Express.js
 - MongoDB Atlas
 - JWT Authentication
-- Groq API — `llama-3.3-70b-versatile` model
-- Multer — PDF file uploads
-- pdf-parse — PDF text extraction
-- Deployed on **Render**
+- Multer
+- pdf-parse
 
 ---
 
-## 🚀 Getting Started
+## AI
 
-### Prerequisites
-- Node.js v18+
-- MongoDB Atlas account (free)
-- Groq API key — free at [console.groq.com](https://console.groq.com)
+- Groq API
+- Llama-3.3-70B-Versatile
 
-### Installation
+---
 
-**1. Clone the repository**
+## Deployment
+
+Frontend
+
+- Vercel
+
+Backend
+
+- Render
+
+Database
+
+- MongoDB Atlas
+
+---
+
+# 📂 Project Structure
+
+```
+Nexora-AI
+│
+├── backend
+│   ├── config
+│   ├── controllers
+│   ├── middleware
+│   ├── models
+│   ├── routes
+│   ├── uploads
+│   ├── utils
+│   ├── server.js
+│   └── package.json
+│
+├── frontend
+│   ├── assets
+│   ├── css
+│   ├── js
+│   ├── pages
+│   ├── index.html
+│   └── favicon
+│
+├── README.md
+└── .gitignore
+```
+
+---
+
+# 🔌 API Endpoints
+
+## Authentication
+
+| Method | Endpoint |
+|---------|----------|
+| POST | `/api/auth/register` |
+| POST | `/api/auth/login` |
+| GET | `/api/auth/me` |
+
+---
+
+## AI
+
+| Method | Endpoint |
+|---------|----------|
+| POST | `/api/ai/chat` |
+| POST | `/api/ai/notes` |
+| POST | `/api/ai/image` |
+| POST | `/api/ai/pdf` |
+| POST | `/api/ai/resume` |
+
+---
+
+## Study Planner
+
+| Method | Endpoint |
+|---------|----------|
+| POST | `/api/planner/create` |
+| GET | `/api/planner/get` |
+| PATCH | `/api/planner/update` |
+| DELETE | `/api/planner/delete/:id` |
+
+---
+
+## Analytics
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/api/analytics` |
+| POST | `/api/analytics/update` |
+
+---
+
+# ⚙ Installation
+
+## Clone Repository
+
 ```bash
 git clone https://github.com/BhawnaBhadana/Nexora-AI.git
+
 cd Nexora-AI
 ```
 
-**2. Install backend dependencies**
+---
+
+## Backend
+
 ```bash
 cd backend
+
 npm install
 ```
 
-**3. Create `.env` file in `/backend`**
-```env
-PORT=5000
-GROQ_API_KEY=your_groq_api_key_here
-MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/nexora-ai
-JWT_SECRET=your_jwt_secret_here
-CLIENT_URL=http://127.0.0.1:5500
+Create
+
+```
+.env
 ```
 
-**4. Start the backend**
+```env
+PORT=5000
+
+MONGO_URI=YOUR_MONGODB_URI
+
+JWT_SECRET=YOUR_SECRET
+
+GROQ_API_KEY=YOUR_GROQ_API_KEY
+
+CLIENT_URL=http://localhost:5500
+```
+
+Run
+
 ```bash
 npm run dev
 ```
 
-**5. Open frontend**
-Open `frontend/index.html` with VS Code Live Server at `http://127.0.0.1:5500`
-
 ---
 
-## 📁 Project Structure
+## Frontend
 
+```bash
+cd frontend
 ```
-Nexora-AI/
-├── backend/
-│   ├── config/
-│   │   └── db.js                    # MongoDB connection
-│   ├── controllers/
-│   │   ├── authcontrollers.js        # Login, register, get user
-│   │   ├── analyticcontrollers.js    # Analytics update & fetch
-│   │   └── studyplancontrollers.js   # CRUD for study plans
-│   ├── middleware/
-│   │   └── authmiddleware.js         # JWT auth middleware
-│   ├── models/
-│   │   ├── user.js                   # User schema with analytics
-│   │   └── studyplan.js              # Study plan schema
-│   ├── routes/
-│   │   ├── authroutes.js             # /api/auth
-│   │   ├── airoutes.js               # /api/ai
-│   │   ├── analyticroutes.js         # /api/analytics
-│   │   └── studyplanroutes.js        # /api/plan
-│   └── server.js                     # Express app entry point
-├── frontend/
-│   ├── index.html                    # Main HTML
-│   ├── style.css                     # All styles + mobile responsive
-│   └── app.js                        # All frontend logic
-└── README.md
+
+Run with
+
+- VS Code Live Server
+
+or
+
+```bash
+npx serve
 ```
 
 ---
 
-## 🔌 API Endpoints
+# 📈 Current Features
 
-### Auth
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login user |
-| GET | `/api/auth/me` | Get current user (protected) |
-
-### AI
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/ai/ask` | General AI query |
-| POST | `/api/ai/image` | Solve image question (vision AI) |
-| POST | `/api/ai/resume` | Generate HTML resume |
-| POST | `/api/ai/pdf` | Analyze PDF and generate questions |
-
-### Study Plan
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/plan/create` | Create new plan (protected) |
-| GET | `/api/plan/get` | Get all user plans (protected) |
-| POST | `/api/plan/toggle` | Toggle topic completion (protected) |
-| DELETE | `/api/plan/:id` | Delete plan (protected) |
-
-### Analytics
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/analytics/update` | Update user activity (protected) |
-| GET | `/api/analytics/get` | Get analytics data (protected) |
+- ✅ AI Chat
+- ✅ AI Notes
+- ✅ Resume Builder
+- ✅ ATS Checker
+- ✅ Image Generator
+- ✅ Mock Tests
+- ✅ Study Planner
+- ✅ Analytics Dashboard
+- ✅ JWT Authentication
+- ✅ Responsive Design
+- ✅ Dark Theme
+- ✅ MongoDB Integration
 
 ---
 
-## 🌐 Deployment
+# 🚀 Upcoming Features
 
-### Frontend → Vercel
-1. Go to [vercel.com](https://vercel.com) → Import GitHub repo
-2. Set **Root Directory** to `frontend`
-3. Leave Build Command and Output Directory empty
-4. Click Deploy
-
-### Backend → Render
-1. Go to [render.com](https://render.com) → New Web Service
-2. Connect GitHub repo
-3. Set **Root Directory** to `backend`
-4. **Build Command:** `npm install`
-5. **Start Command:** `node server.js`
-6. Add all environment variables
-7. Deploy
+- Google Login
+- Razorpay Premium
+- Chat History
+- Saved Notes
+- PDF Question Generator
+- Voice Assistant
+- Hindi Support
+- Mobile App
+- PWA Support
+- Email Reminders
+- Leaderboard
+- Collaborative Study Rooms
 
 ---
 
-## 📊 Analytics Features
+# 🎯 Target Users
 
-- **Weekly Activity Bar Chart** — track daily study sessions
-- **Activity Breakdown Pie Chart** — doubts vs notes vs tests
-- **30-day Study Heatmap** — GitHub-style contribution graph
-- **Performance Stats** — accuracy %, streak, topics covered
-- **Study Streak** — daily streak tracking like Duolingo
-
----
-
-## 🎯 Target Users
-
-Indian college students (BCA, BSCA, B.Tech, BSc) who need:
-- Affordable AI study tools
-- Exam preparation assistance
-- Career guidance for Indian job market
-- Professional resume building
-- Study planning and tracking
+- BCA Students
+- B.Tech Students
+- B.Sc Students
+- MCA Students
+- Placement Aspirants
+- Competitive Exam Students
+- College Learners
 
 ---
 
-## 🔮 Roadmap
+# 👩‍💻 Developer
 
-- [ ] Hindi language support
-- [ ] Streaming AI responses
-- [ ] Google OAuth login
-- [ ] Razorpay subscription (Free vs Premium)
-- [ ] Notes save to database
-- [ ] Chat history persistence
-- [ ] PWA — install as mobile app
-- [ ] Collaborative study rooms
-- [ ] Admin dashboard
-- [ ] Email notifications and reminders
+## **Bhawna Bhadana**
 
----
+Full Stack Developer
 
-## 👩‍💻 Developer
+BCA Student
 
-**Bhawna Bhadana**
-BSCA Student | Full Stack Developer
+Passionate about AI, Education Technology and Web Development.
 
-[![GitHub](https://img.shields.io/badge/GitHub-BhawnaBhadana-181717?style=flat&logo=github)](https://github.com/BhawnaBhadana)
+### GitHub
+
+https://github.com/BhawnaBhadana
 
 ---
 
-## 📄 License
+# 🤝 Contributing
 
-MIT License — feel free to use, modify and distribute.
+Contributions are always welcome.
+
+1. Fork the repository
+
+2. Create a feature branch
+
+3. Commit your changes
+
+4. Push the branch
+
+5. Open a Pull Request
 
 ---
 
-⭐ **If you found this helpful, please star the repository!**
+# 📄 License
 
-> Built with ❤️ for Indian students by Bhawna Bhadana
+Licensed under the MIT License.
+
+---
+
+<p align="center">
+
+### ⭐ If you like this project, please consider giving it a Star!
+
+Built with ❤️ by **Bhawna Bhadana**
+
+</p>
