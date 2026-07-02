@@ -338,7 +338,7 @@ body.dark .streak-tip{color:#FCD34D}
     <button class="nav-btn active" onclick="showPanel('dashboard',this)"><i class="ti ti-layout-dashboard"></i> Dashboard</button>
     <button class="nav-btn" onclick="showPanel('chat',this)"><i class="ti ti-message-chatbot"></i> AI Chat</button>
     <button class="nav-btn" onclick="showPanel('notes',this)"><i class="ti ti-notes"></i> Notes Generator</button>
-    <button class="nav-btn" onclick="showPanel('imagegen',this)"><i class="ti ti-photo-ai"></i> Image Generator</button>
+    <button class="nav-btn" onclick="showPanel('interview',this)"><i class="ti ti-microphone-2"></i> Interview Coach</button>
     <button class="nav-btn" onclick="showPanel('resume',this)"><i class="ti ti-id-badge"></i> Resume Builder</button>
     <button class="nav-btn" onclick="showPanel('atschecker',this)"><i class="ti ti-shield-check"></i> ATS Score Checker</button>
     <button class="nav-btn" onclick="showPanel('mocktest',this)"><i class="ti ti-checklist"></i> Mock Test</button>
@@ -397,7 +397,7 @@ body.dark .streak-tip{color:#FCD34D}
       <div class="stats-grid">
         <div class="stat-card"><i class="ti ti-notes"></i><h3 id="statNotes">0</h3><p>Notes Generated</p></div>
         <div class="stat-card"><i class="ti ti-message-chatbot"></i><h3 id="statChats">0</h3><p>Chat Messages</p></div>
-        <div class="stat-card"><i class="ti ti-photo-ai"></i><h3 id="statImages">0</h3><p>Images Created</p></div>
+        <div class="stat-card"><i class="ti ti-microphone-2"></i><h3 id="statInterviews">0</h3><p>Interview Sessions</p></div>
         <div class="stat-card"><i class="ti ti-flame" style="color:#F59E0B"></i><h3 id="statStreak">0</h3><p>Day Streak 🔥</p></div>
       </div>
       <div class="grid-2">
@@ -408,7 +408,7 @@ body.dark .streak-tip{color:#FCD34D}
         <h3>AI Usage — <span id="planLabelDash" style="color:var(--primary);font-weight:800">Free Plan</span></h3>
         <div class="usage-bar-wrap"><div class="usage-bar-header"><span>Chat Messages</span><span id="chatUsageLabel">0/20</span></div><div class="usage-bar-track"><div class="usage-bar-fill" id="chatUsageBar" style="width:0%"></div></div></div>
         <div class="usage-bar-wrap"><div class="usage-bar-header"><span>Notes Generated</span><span id="notesUsageLabel">0/10</span></div><div class="usage-bar-track"><div class="usage-bar-fill" id="notesUsageBar" style="width:0%"></div></div></div>
-        <div class="usage-bar-wrap"><div class="usage-bar-header"><span>Images Created</span><span id="imagesUsageLabel">0/5</span></div><div class="usage-bar-track"><div class="usage-bar-fill" id="imagesUsageBar" style="width:0%"></div></div></div>
+        <div class="usage-bar-wrap"><div class="usage-bar-header"><span>Interview Sessions</span><span id="interviewsUsageLabel">0/5</span></div><div class="usage-bar-track"><div class="usage-bar-fill" id="interviewsUsageBar" style="width:0%"></div></div></div>
         <div style="margin-top:12px"><button onclick="openUpgradeModal()" style="padding:10px 20px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;color:white;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer"><i class="ti ti-crown" style="margin-right:6px"></i>Upgrade to Pro</button></div>
       </div>
     </div>
@@ -444,28 +444,33 @@ body.dark .streak-tip{color:#FCD34D}
     </div>
 
     <!-- IMAGE GEN -->
-    <div class="panel" id="imagegen">
+    <div class="panel" id="interview">
       <div class="tool-card">
-        <h2><i class="ti ti-photo-ai" style="color:var(--primary)"></i> AI Image Generator</h2>
-        <p class="desc">Describe an image and our AI will create it for you.</p>
-        <textarea id="imgPrompt" placeholder="e.g. A futuristic city at sunset with flying cars, purple sky, neon lights..."></textarea>
-        <div class="tag-row">
-          <button class="tag" onclick="addTag('photorealistic')">photorealistic</button>
-          <button class="tag" onclick="addTag('digital art')">digital art</button>
-          <button class="tag" onclick="addTag('anime style')">anime style</button>
-          <button class="tag" onclick="addTag('oil painting')">oil painting</button>
-          <button class="tag" onclick="addTag('4K ultra HD')">4K ultra HD</button>
-          <button class="tag" onclick="addTag('cinematic lighting')">cinematic lighting</button>
+        <h2><i class="ti ti-microphone-2" style="color:var(--primary)"></i> AI Interview Coach</h2>
+        <p class="desc">Practice real interview questions for your target role and get instant AI feedback on your answers.</p>
+
+        <div id="interviewSetup">
+          <div class="resume-grid">
+            <input type="text" id="ivRole" placeholder="Target Role (e.g. Frontend Developer, SDE-1) *">
+            <select id="ivType">
+              <option value="technical">Technical</option>
+              <option value="behavioral">Behavioral</option>
+              <option value="hr">HR / General</option>
+              <option value="dsa">DSA / Problem Solving</option>
+            </select>
+          </div>
+          <button class="run-btn" id="ivStartBtn" onclick="startInterview()"><i class="ti ti-player-play"></i> Start Interview</button>
         </div>
-        <select id="imgStyle">
-          <option value="realistic">Realistic</option>
-          <option value="artistic">Artistic / Painterly</option>
-          <option value="anime">Anime / Manga</option>
-          <option value="3d">3D Render</option>
-          <option value="sketch">Sketch / Line Art</option>
-        </select>
-        <button class="run-btn" id="imgBtn" onclick="generateImage()"><i class="ti ti-photo"></i> Generate Image</button>
-        <div id="imgOutput"></div>
+
+        <div id="interviewSession" style="display:none">
+          <div class="output-box" id="ivQuestionBox" style="margin-bottom:12px"></div>
+          <textarea id="ivAnswer" placeholder="Type your answer here..." style="min-height:140px"></textarea>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <button class="run-btn" id="ivSubmitBtn" onclick="submitInterviewAnswer()" style="flex:1"><i class="ti ti-send"></i> Submit Answer</button>
+            <button class="run-btn" onclick="endInterview()" style="flex:none;background:var(--danger)"><i class="ti ti-square-x"></i> End Session</button>
+          </div>
+          <div class="output-box empty" id="ivFeedbackBox" style="margin-top:14px">Your feedback will appear here after you submit an answer...</div>
+        </div>
       </div>
     </div>
 
@@ -619,12 +624,11 @@ body.dark .streak-tip{color:#FCD34D}
           <ul class="feat-list">
             <li><i class="ti ti-check"></i> 20 Chat messages/day</li>
             <li><i class="ti ti-check"></i> 10 Notes per day</li>
-            <li><i class="ti ti-check"></i> 5 Images per day</li>
+            <li><i class="ti ti-check"></i> 5 Interview sessions per day</li>
             <li><i class="ti ti-check"></i> 3 Mock tests per day</li>
             <li><i class="ti ti-check"></i> Streak tracking</li>
             <li class="no"><i class="ti ti-x"></i> Priority AI responses</li>
             <li class="no"><i class="ti ti-x"></i> Advanced resume templates</li>
-            <li class="no"><i class="ti ti-x"></i> No watermark on images</li>
           </ul>
           <button class="plan-btn" id="freePlanBtn" onclick="selectPlan('free')" disabled>Current Plan</button>
         </div>
@@ -637,11 +641,10 @@ body.dark .streak-tip{color:#FCD34D}
           <ul class="feat-list">
             <li><i class="ti ti-check"></i> Unlimited chat messages</li>
             <li><i class="ti ti-check"></i> Unlimited notes</li>
-            <li><i class="ti ti-check"></i> 50 images per day</li>
+            <li><i class="ti ti-check"></i> 50 interview sessions per day</li>
             <li><i class="ti ti-check"></i> Unlimited mock tests</li>
             <li><i class="ti ti-check"></i> Priority AI responses</li>
             <li><i class="ti ti-check"></i> Advanced resume templates</li>
-            <li><i class="ti ti-check"></i> No watermark on images</li>
             <li><i class="ti ti-check"></i> Streak shields (2/month)</li>
           </ul>
           <button class="plan-btn upgrade" id="proPlanBtn" onclick="selectPlan('pro')">Upgrade to Pro →</button>

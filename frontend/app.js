@@ -6,10 +6,10 @@ let currentUser = null;
 let darkMode = false;
 let chatHistory = [];
 let userPlan = "free";
-let usage = { chat: 0, notes: 0, images: 0 };
+let usage = { chat: 0, notes: 0, interviews: 0 };
 const LIMITS = {
-  free: { chat: 20, notes: 10, images: 5 },
-  pro:  { chat: 99999, notes: 99999, images: 50 }
+  free: { chat: 20, notes: 10, interviews: 5 },
+  pro:  { chat: 99999, notes: 99999, interviews: 50 }
 };
 
 // ===== BACKEND AI HELPERS =====
@@ -177,12 +177,12 @@ function demoLogin() {
 function loadUserData() {
   const key   = "nexora-data-" + currentUser.email;
   const saved = JSON.parse(localStorage.getItem(key) || "null");
-  if (saved) { userPlan = saved.plan || "free"; usage = saved.usage || { chat: 0, notes: 0, images: 0 }; }
-  else        { userPlan = "free"; usage = { chat: 0, notes: 0, images: 0 }; }
+  if (saved) { userPlan = saved.plan || "free"; usage = saved.usage || { chat: 0, notes: 0, interviews: 0 }; }
+  else        { userPlan = "free"; usage = { chat: 0, notes: 0, interviews: 0 }; }
   const today   = new Date().toDateString();
   const lastDay = localStorage.getItem("nexora-lastday-" + currentUser.email);
   if (lastDay !== today) {
-    usage = { chat: 0, notes: 0, images: 0 };
+    usage = { chat: 0, notes: 0, interviews: 0 };
     localStorage.setItem("nexora-lastday-" + currentUser.email, today);
     saveUserData();
   }
@@ -311,12 +311,12 @@ function updateUsageUI() {
   const cp  = (v, m) => Math.min((v / m) * 100, 100).toFixed(0) + "%";
   document.getElementById("chatUsageLabel").textContent   = userPlan==="pro" ? `${usage.chat}/∞`          : `${usage.chat}/${lim.chat}`;
   document.getElementById("notesUsageLabel").textContent  = userPlan==="pro" ? `${usage.notes}/∞`         : `${usage.notes}/${lim.notes}`;
-  document.getElementById("imagesUsageLabel").textContent = userPlan==="pro" ? `${usage.images}/${lim.images}` : `${usage.images}/${lim.images}`;
+  document.getElementById("interviewsUsageLabel").textContent = userPlan==="pro" ? `${usage.interviews}/${lim.interviews}` : `${usage.interviews}/${lim.interviews}`;
   document.getElementById("chatUsageBar").style.width     = cp(usage.chat,   lim.chat);
   document.getElementById("notesUsageBar").style.width    = cp(usage.notes,  lim.notes);
-  document.getElementById("imagesUsageBar").style.width   = cp(usage.images, lim.images);
-  if (usage.images / lim.images > 0.8)
-    document.getElementById("imagesUsageBar").style.background = "linear-gradient(90deg,#F59E0B,#EF4444)";
+  document.getElementById("interviewsUsageBar").style.width   = cp(usage.interviews, lim.interviews);
+  if (usage.interviews / lim.interviews > 0.8)
+    document.getElementById("interviewsUsageBar").style.background = "linear-gradient(90deg,#F59E0B,#EF4444)";
   document.getElementById("planMiniFill").style.width   = cp(usage.chat, lim.chat);
   document.getElementById("planBadgeLabel").textContent = userPlan==="pro"
     ? `${usage.chat} chats today`
@@ -350,7 +350,7 @@ function showPanel(id, btn) {
   if (t) t.classList.add("active");
   document.querySelectorAll(".nav-btn").forEach(n => n.classList.remove("active"));
   if (btn) btn.classList.add("active");
-  const titles = { dashboard:"Dashboard", chat:"AI Chat", notes:"Notes Generator", imagegen:"Image Generator", resume:"Resume Builder", mocktest:"Mock Test", planner:"Study Planner", analytics:"Analytics", settings:"Settings" };
+  const titles = { dashboard:"Dashboard", chat:"AI Chat", notes:"Notes Generator", interview:"AI Interview Coach", resume:"Resume Builder", atschecker:"ATS Score Checker", mocktest:"Mock Test", planner:"Study Planner", analytics:"Analytics", settings:"Settings" };
   document.getElementById("pageTitle").textContent = titles[id] || id;
   if (id === "analytics") loadAnalyticsCharts();
   if (window.innerWidth <= 992) document.getElementById("sidebar").classList.remove("show");
@@ -377,7 +377,7 @@ function closeLogout() { document.getElementById("logoutOverlay").classList.remo
 function doLogout() {
   localStorage.removeItem("nexora-session");
   localStorage.removeItem("nexora-token");
-  currentUser = null; chatHistory = []; userPlan = "free"; usage = { chat: 0, notes: 0, images: 0 };
+  currentUser = null; chatHistory = []; userPlan = "free"; usage = { chat: 0, notes: 0, interviews: 0 };
   document.getElementById("chatMessages").innerHTML = "<div class=\"ai-message\">👋 Hi! I'm your Nexora AI assistant. How can I help you today?</div>";
   document.getElementById("appPage").classList.remove("show");
   document.getElementById("loginPage").classList.add("show");
@@ -456,100 +456,85 @@ async function generateNotes() {
   btn.disabled = false; btn.innerHTML = '<i class="ti ti-wand"></i> Generate Notes';
 }
 
-// ===== IMAGE GEN =====
-function addTag(tag) {
-  const i = document.getElementById("imgPrompt");
-  i.value = i.value ? i.value + ", " + tag : tag;
+// ===== AI INTERVIEW COACH =====
+let interviewState = null;
+
+function startInterview() {
+  const role = document.getElementById("ivRole").value.trim();
+  const type = document.getElementById("ivType").value;
+  if (!role) { showToast("Please enter a target role", "warning"); return; }
+  if (!checkLimit("interviews")) return;
+
+  interviewState = { role, type, history: [], questionCount: 0, currentQuestion: "" };
+  document.getElementById("interviewSetup").style.display = "none";
+  document.getElementById("interviewSession").style.display = "block";
+  const fb = document.getElementById("ivFeedbackBox");
+  fb.classList.add("empty");
+  fb.innerHTML = "Your feedback will appear here after you submit an answer...";
+  askNextInterviewQuestion();
 }
 
-async function generateImage() {
-  const prompt = document.getElementById("imgPrompt").value.trim();
-  const style  = document.getElementById("imgStyle").value;
-  const btn    = document.getElementById("imgBtn");
-  const out    = document.getElementById("imgOutput");
-  if (!prompt) { showToast("Please describe the image", "warning"); return; }
-  if (!checkLimit("images")) return;
+async function askNextInterviewQuestion() {
+  const qBox = document.getElementById("ivQuestionBox");
+  qBox.innerHTML = '<div class="loader"></div> Preparing your question...';
 
-  btn.disabled = true; btn.innerHTML = '<div class="loader"></div> Generating...';
-  out.innerHTML = '<div class="output-box" style="text-align:center;padding:28px;color:var(--text-light)"><i class="ti ti-photo-ai" style="font-size:38px;color:var(--primary);display:block;margin-bottom:10px"></i>Creating your image with Gemini AI...</div>';
-
-  const stylePrompts = {
-    realistic: "photorealistic, hyperdetailed, 8k ultra realistic",
-    artistic:  "oil painting, artistic, painterly, fine art",
-    anime:     "anime style, manga, vibrant colors, Japanese animation",
-    "3d":      "3D render, octane render, studio lighting, CGI",
-    sketch:    "pencil sketch, detailed line art, hand drawn"
-  };
-
-  const fullPrompt = `${prompt}, ${stylePrompts[style] || "high quality, detailed"}`;
+  const typeLabels = { technical: "technical", behavioral: "behavioral", hr: "HR / general", dsa: "DSA / problem-solving" };
+  const historyText = interviewState.history
+    .map((h, i) => `Q${i + 1}: ${h.question}\nCandidate's answer: ${h.answer}`)
+    .join("\n\n");
 
   try {
-    // Try Gemini image generation first
-    const res = await fetch(`${BACKEND}/api/ai/generate-image`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: fullPrompt })
-    });
-    const data = await res.json();
-
-    if (data.result && !data.fallback) {
-      // Gemini returned a base64 image
-      out.innerHTML = "";
-      const wrap = document.createElement("div"); wrap.className = "img-result";
-      const img = new Image();
-      img.style.cssText = "width:100%;display:block;border-radius:12px";
-      img.src = data.result;
-      wrap.appendChild(img);
-      out.appendChild(wrap);
-
-      // Download button
-      const dl = document.createElement("a");
-      dl.href = data.result; dl.download = "nexora-image.png";
-      dl.innerHTML = '<button class="run-btn" style="margin-top:10px"><i class="ti ti-download"></i> Download Image</button>';
-      out.appendChild(dl);
-
-      const badge = document.createElement("div");
-      badge.style.cssText = "font-size:11px;color:var(--text-light);margin-top:6px;text-align:center";
-      badge.innerHTML = '✨ Generated by <strong>Gemini AI</strong>';
-      out.appendChild(badge);
-
-      bumpUsage("images");
-      showToast("Image generated with Gemini AI!", "success");
-    } else {
-      // Fallback to Pollinations if Gemini fails
-      throw new Error(data.error || "Gemini unavailable");
-    }
-  } catch (err) {
-    console.warn("Gemini image gen failed, using Pollinations fallback:", err.message);
-    showToast("Using fallback image engine...", "info");
-
-    const encodedPrompt = encodeURIComponent(fullPrompt);
-    const seed = Math.floor(Math.random() * 1000000);
-    const imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=768&height=512&seed=${seed}&nologo=true`;
-
-    const img = new Image();
-    img.onload = () => {
-      out.innerHTML = "";
-      const wrap = document.createElement("div"); wrap.className = "img-result";
-      img.style.cssText = "width:100%;display:block;border-radius:12px";
-      wrap.appendChild(img); out.appendChild(wrap);
-      const dl = document.createElement("a"); dl.href = imgUrl; dl.target = "_blank";
-      dl.innerHTML = '<button class="run-btn" style="margin-top:10px"><i class="ti ti-download"></i> Open Full Image</button>';
-      out.appendChild(dl);
-      bumpUsage("images");
-      showToast("Image generated!", "success");
-      btn.disabled = false; btn.innerHTML = '<i class="ti ti-photo"></i> Generate Image';
-    };
-    img.onerror = () => {
-      out.innerHTML = '<div class="output-box empty">Image generation failed. Try a different prompt.</div>';
-      btn.disabled = false; btn.innerHTML = '<i class="ti ti-photo"></i> Generate Image';
-      showToast("Image failed", "danger");
-    };
-    img.src = imgUrl;
-    return;
+    const question = await callAI(
+      `You are a strict but fair interviewer conducting a ${typeLabels[interviewState.type]} interview for the role of ${interviewState.role}. Ask exactly ONE clear, realistic interview question. Reply with ONLY the question text — no preamble, no numbering, no answer.`,
+      historyText
+        ? `Interview so far:\n${historyText}\n\nAsk the next question, building naturally on the conversation.`
+        : `Ask the opening interview question.`
+    );
+    interviewState.currentQuestion = question.trim();
+    interviewState.questionCount++;
+    qBox.innerHTML = `<strong>Q${interviewState.questionCount}:</strong> ${formatText(interviewState.currentQuestion)}`;
+    const ansBox = document.getElementById("ivAnswer");
+    ansBox.value = "";
+    ansBox.focus();
+  } catch (e) {
+    qBox.innerHTML = "Couldn't generate a question. Please try again.";
+    showToast("Failed to load question", "danger");
   }
+}
 
-  btn.disabled = false; btn.innerHTML = '<i class="ti ti-photo"></i> Generate Image';
+async function submitInterviewAnswer() {
+  const answer = document.getElementById("ivAnswer").value.trim();
+  const btn = document.getElementById("ivSubmitBtn");
+  const fb = document.getElementById("ivFeedbackBox");
+  if (!answer) { showToast("Please type an answer first", "warning"); return; }
+
+  btn.disabled = true; btn.innerHTML = '<div class="loader"></div> Evaluating...';
+  fb.classList.remove("empty");
+
+  try {
+    await streamAI(
+      `You are an expert interview coach reviewing a candidate's answer for a ${interviewState.role} interview. Give concise, honest, encouraging feedback: what was good, what to improve, and a **Score** out of 10. Use **bold** for section headers.`,
+      `Question: ${interviewState.currentQuestion}\n\nCandidate's answer: ${answer}`,
+      fb
+    );
+    interviewState.history.push({ question: interviewState.currentQuestion, answer });
+    bumpUsage("interviews");
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Submit Answer';
+    setTimeout(askNextInterviewQuestion, 600);
+  } catch (e) {
+    fb.innerHTML = "Error getting feedback: " + e.message;
+    showToast("Feedback failed", "danger");
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Submit Answer';
+  }
+}
+
+function endInterview() {
+  const count = interviewState ? interviewState.questionCount : 0;
+  document.getElementById("interviewSetup").style.display = "block";
+  document.getElementById("interviewSession").style.display = "none";
+  document.getElementById("ivRole").value = "";
+  showToast(`Session ended — ${count} question(s) practiced`, "success");
+  interviewState = null;
 }
 
 // ===== RESUME =====
@@ -688,9 +673,9 @@ window.addEventListener("load", () => {
 /* ============================================================
    ATS SCORE CHECKER + ATS-STYLED RESUME OUTPUT
    Paste these functions into your existing app.js
-   Assumes you already have: API_BASE (or similar base URL),
-   authToken / getToken(), showToast(), and a working fetch
-   pattern like your generateResume() function.
+   Uses BACKEND (base URL) and the "nexora-token" localStorage
+   value for auth, showToast(), and a fetch pattern consistent
+   with the rest of this file (see generateResume()).
    ============================================================ */
 
 let atsUploadedFile = null;
@@ -738,27 +723,31 @@ async function checkAtsScore() {
       if (resumeText) formData.append('resumeText', resumeText);
       if (jobDesc) formData.append('jobDescription', jobDesc);
 
-      res = await fetch(`${API_BASE}/api/ats/score`, {
+      res = await fetch(`${BACKEND}/api/ats/score`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${getToken()}` },
+        headers: { 'Authorization': `Bearer ${localStorage.getItem("nexora-token") || ""}` },
         body: formData
       });
     } else {
-      res = await fetch(`${API_BASE}/api/ats/score`, {
+      res = await fetch(`${BACKEND}/api/ats/score`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getToken()}`
+          'Authorization': `Bearer ${localStorage.getItem("nexora-token") || ""}`
         },
         body: JSON.stringify({ resumeText, jobDescription: jobDesc })
       });
     }
 
-    if (!res.ok) throw new Error('Request failed');
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.message || `Request failed (${res.status})`);
+    }
     const data = await res.json();
     renderAtsResult(data);
   } catch (err) {
-    out.innerHTML = 'Something went wrong while checking your resume. Please try again.';
+    console.error('ATS check error:', err);
+    out.innerHTML = `Something went wrong while checking your resume: ${err.message || 'Please try again.'}`;
     showToast('ATS check failed', 'error');
   } finally {
     btn.disabled = false;
