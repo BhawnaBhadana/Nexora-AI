@@ -1,21 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const Groq = require("groq-sdk");
+const OpenAI = require("openai");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const multer = require("multer");
 const pdfParse = require("pdf-parse");
 
 // ─── Clients ───────────────────────────────────────────────────────────────
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const deepseek = new OpenAI({
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: "https://api.deepseek.com"
+});
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
-// ─── GROQ: Text Chat (non-streaming) ──────────────────────────────────────
+// ─── DEEPSEEK: Text Chat (non-streaming) ──────────────────────────────────
 router.post("/ask", async (req, res) => {
   try {
     const { system, message } = req.body;
-    const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+    const response = await deepseek.chat.completions.create({
+      model: "deepseek-chat",
       max_tokens: 1500,
       messages: [
         { role: "system", content: system },
@@ -28,7 +31,7 @@ router.post("/ask", async (req, res) => {
   }
 });
 
-// ─── GROQ: Text Chat (streaming) ──────────────────────────────────────────
+// ─── DEEPSEEK: Text Chat (streaming) ──────────────────────────────────────
 router.post("/stream", async (req, res) => {
   try {
     const { system, message } = req.body;
@@ -37,8 +40,8 @@ router.post("/stream", async (req, res) => {
     res.setHeader("Connection", "keep-alive");
     res.setHeader("Access-Control-Allow-Origin", "*");
 
-    const stream = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+    const stream = await deepseek.chat.completions.create({
+      model: "deepseek-chat",
       max_tokens: 1500,
       stream: true,
       messages: [
@@ -90,7 +93,6 @@ router.post("/generate-image", async (req, res) => {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ message: "Prompt is required" });
 
-    // Gemini imagen-3.0-generate-002 for image generation
     const model = genAI.getGenerativeModel({ model: "imagen-3.0-generate-002" });
 
     const result = await model.generateImages({
@@ -111,7 +113,6 @@ router.post("/generate-image", async (req, res) => {
       type: "base64"
     });
   } catch (err) {
-    // Fallback: if Imagen not available on your plan, use Pollinations
     console.error("Gemini image gen error:", err.message);
     res.status(500).json({
       message: "Image generation error",
@@ -121,12 +122,12 @@ router.post("/generate-image", async (req, res) => {
   }
 });
 
-// ─── GROQ: Resume Builder ─────────────────────────────────────────────────
+// ─── DEEPSEEK: Resume Builder ──────────────────────────────────────────────
 router.post("/resume", async (req, res) => {
   try {
     const { userData } = req.body;
-    const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+    const response = await deepseek.chat.completions.create({
+      model: "deepseek-chat",
       max_tokens: 2000,
       messages: [
         {
@@ -147,15 +148,15 @@ router.post("/resume", async (req, res) => {
   }
 });
 
-// ─── GROQ: PDF Analyzer ───────────────────────────────────────────────────
+// ─── DEEPSEEK: PDF Analyzer ────────────────────────────────────────────────
 router.post("/pdf", upload.single("pdf"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: "No PDF uploaded" });
     const pdfData = await pdfParse(req.file.buffer);
     const text = pdfData.text.slice(0, 4000);
 
-    const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+    const response = await deepseek.chat.completions.create({
+      model: "deepseek-chat",
       max_tokens: 2000,
       messages: [
         {
