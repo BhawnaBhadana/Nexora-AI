@@ -538,31 +538,40 @@ function endInterview() {
 }
 
 // ===== RESUME =====
+let selectedTemplate = 'tmpl-modern';
+
+function selectTemplate(tmpl, btn) {
+  selectedTemplate = tmpl;
+  document.querySelectorAll('.tmpl-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const content = document.querySelector('#resumeStyled .resume-content');
+  if (content) content.className = `resume-content ${selectedTemplate}`;
+}
+
 async function generateResume() {
   const name  = document.getElementById("rName").value.trim();
   const title = document.getElementById("rTitle").value.trim();
   const btn   = document.getElementById("resumeBtn");
   const paper = document.getElementById("resumeStyled");
-  if (!name || !title) { showToast("Name and job title required", "warning"); return; }
+  if (!name || !title) { showToast("Name and target role required", "warning"); return; }
 
   btn.disabled = true; btn.innerHTML = '<div class="loader"></div> Building...';
   paper.innerHTML = '<div class="resume-empty-state">Building your resume...</div>';
   document.getElementById('resumeDownloadBtn').style.display = 'none';
-  document.getElementById('resumeAtsBody').innerHTML = '<p class="ats-placeholder">Generate a resume to see your ATS score</p>';
 
   const userData = {
     name,
-    email:      document.getElementById("rEmail").value,
-    phone:      document.getElementById("rPhone").value,
-    location:   document.getElementById("rLocation").value,
-    linkedin:   document.getElementById("rLinkedIn").value,
+    email:      document.getElementById("rEmail").value.trim(),
+    phone:      document.getElementById("rPhone").value.trim(),
+    location:   document.getElementById("rLocation").value.trim(),
+    linkedin:   document.getElementById("rLinkedIn").value.trim(),
     degree:     title,
-    skills:     document.getElementById("rSkills").value,
-    projects:   "",
-    experience: document.getElementById("rExperience").value,
+    skills:     document.getElementById("rSkills").value.trim(),
+    projects:   document.getElementById("rProjects").value.trim(),
+    experience: document.getElementById("rExperience").value.trim(),
     achievements: "",
-    objective:  document.getElementById("rSummary").value,
-    college:    document.getElementById("rEducation").value
+    objective:  document.getElementById("rSummary").value.trim(),
+    college:    document.getElementById("rEducation").value.trim()
   };
 
   try {
@@ -574,77 +583,14 @@ async function generateResume() {
     const data = await res.json();
     if (!data.result) throw new Error("No result");
 
-    paper.innerHTML = data.result;
+    paper.innerHTML = `<div class="resume-content ${selectedTemplate}">${data.result}</div>`;
     document.getElementById('resumeDownloadBtn').style.display = 'inline-flex';
     showToast("Resume generated!", "success");
-
-    // Auto-score the generated resume against ATS rules
-    scoreGeneratedResume(paper.innerText);
   } catch (e) {
     paper.innerHTML = `<div class="resume-empty-state">Error: ${e.message}</div>`;
     showToast("Failed", "danger");
   }
   btn.disabled = false; btn.innerHTML = '<i class="ti ti-wand"></i> Generate Resume';
-}
-
-// ===== AUTO ATS SCORING FOR GENERATED RESUME =====
-async function scoreGeneratedResume(plainText) {
-  const atsBody = document.getElementById('resumeAtsBody');
-  atsBody.innerHTML = '<p class="ats-placeholder">Scoring your resume...</p>';
-  try {
-    const res = await fetch(`${BACKEND}/api/ats/score`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem("nexora-token") || ""}`
-      },
-      body: JSON.stringify({ resumeText: plainText })
-    });
-    if (!res.ok) throw new Error('Scoring failed');
-    const data = await res.json();
-    renderResumeAtsScore(data);
-  } catch (e) {
-    atsBody.innerHTML = `<p class="ats-placeholder">Couldn't score resume: ${e.message}</p>`;
-  }
-}
-
-function renderAtsRing(score) {
-  const r = 54, c = 2 * Math.PI * r;
-  const offset = c * (1 - score / 100);
-  const color = score >= 80 ? 'var(--success)' : score >= 60 ? 'var(--warning)' : 'var(--danger)';
-  return `
-  <svg width="140" height="140" viewBox="0 0 140 140">
-    <circle cx="70" cy="70" r="${r}" stroke="var(--border)" stroke-width="10" fill="none"/>
-    <circle cx="70" cy="70" r="${r}" stroke="${color}" stroke-width="10" fill="none"
-      stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${offset}"
-      transform="rotate(-90 70 70)"/>
-    <text x="70" y="66" text-anchor="middle" font-size="26" font-weight="800" fill="var(--text)">${score}</text>
-    <text x="70" y="86" text-anchor="middle" font-size="10" fill="var(--text-light)">/100</text>
-  </svg>`;
-}
-
-function renderResumeAtsScore(data) {
-  const atsBody = document.getElementById('resumeAtsBody');
-  const score = data.overallScore ?? 0;
-  const msgColor = score >= 80 ? 'var(--success)' : score >= 60 ? 'var(--warning)' : 'var(--danger)';
-  const msg = score >= 80 ? 'Excellent! ATS-friendly' : score >= 60 ? 'Good, but can improve' : 'Needs work';
-
-  const bars = Object.entries(data.breakdown || {}).map(([k, v]) => `
-    <div class="ats-mini-row"><span>${k.charAt(0).toUpperCase() + k.slice(1)}</span><span class="val">${v}%</span></div>
-  `).join('');
-
-  const strengths = (data.strengths || []).slice(0, 4).map(s => `<div class="item">✅ ${s}</div>`).join('');
-  const issues = (data.issues || []).slice(0, 4).map(s => `<div class="item">⚠️ ${s}</div>`).join('');
-
-  atsBody.innerHTML = `
-    <div class="ats-ring-wrap">
-      ${renderAtsRing(score)}
-      <div class="ats-ring-msg" style="color:${msgColor}">${msg}</div>
-    </div>
-    ${bars}
-    ${strengths ? `<div class="ats-box"><h4>What's Good</h4>${strengths}</div>` : ''}
-    ${issues ? `<div class="ats-box"><h4>Suggestions</h4>${issues}</div>` : ''}
-  `;
 }
 
 // ===== MOCK TEST =====

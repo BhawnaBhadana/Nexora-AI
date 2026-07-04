@@ -126,23 +126,65 @@ router.post("/generate-image", async (req, res) => {
 router.post("/resume", async (req, res) => {
   try {
     const { userData } = req.body;
+
     const response = await deepseek.chat.completions.create({
       model: "deepseek-chat",
-      max_tokens: 2000,
+      max_tokens: 1800,
+      temperature: 0.4,
       messages: [
         {
           role: "system",
-          content: `You are Nexora AI resume builder for Indian college students.
-          Generate a professional ATS-friendly resume in clean HTML.
-          Use only inline styles. Make it look like a real professional resume.
-          Use this color scheme: #1a1a1a text, #7F77DD for headings/accents, clean white background.
-          Structure: Header with name+contact, Objective, Education, Skills, Projects, Experience, Achievements.
-          Return ONLY the HTML div content, no explanation, no markdown backticks.`
+          content: `You are a professional resume writer for Indian college students and early-career developers.
+
+You will be given raw form data. It may be messy, incomplete, or contain line breaks within a single field — clean it up and organize it correctly, do not copy it verbatim if it's disorganized.
+
+Return ONLY valid HTML using EXACTLY this structure and these class names. No inline styles. No <html>/<body> tags. No markdown fences. No explanation before or after.
+
+<h1>Full Name</h1>
+<div class="r-role">Target Role</div>
+<div class="r-contact">
+  <span>email</span>
+  <span>phone</span>
+  <span>location</span>
+  <span>linkedin</span>
+</div>
+<h2>Professional Summary</h2>
+<p>2-3 sentence summary tailored to the target role. Write this yourself in professional language even if the input summary is rough or missing — infer it from their skills/education.</p>
+<h2>Education</h2>
+<p><strong>Degree</strong>, Institution — Year<br>CGPA/details if given</p>
+(repeat the above <p> block per education entry, most recent first)
+<h2>Skills</h2>
+<p>Group logically by category, e.g. <strong>Frontend:</strong> React, Tailwind CSS. Do not just dump a raw comma list if categories are obvious from context.</p>
+<h2>Projects</h2>
+<ul>
+<li><strong>Project Name</strong> — one clear line describing what it does. Tech: stack used.</li>
+</ul>
+<h2>Experience</h2>
+<p><strong>Role</strong>, Company — Duration</p>
+<ul><li>One bullet per responsibility/achievement, action-verb first, quantify where possible.</li></ul>
+(repeat per experience entry; omit this entire section if no experience was given — do not invent fake experience)
+<h2>Achievements</h2>
+<ul><li>One line per achievement</li></ul>
+
+STRICT RULES:
+- Never duplicate a section or repeat the same line twice.
+- Never leave a field's raw placeholder-like text (e.g. stray words, unrelated fragments) in the output — if a field's content doesn't make sense for its section, omit that line rather than including garbage.
+- Skip any section entirely (including its <h2>) if there is truly no usable data for it — never fabricate degrees, companies, or dates that weren't provided.
+- Keep everything ATS-friendly: no tables, no icons, no images, no multi-column layouts.
+- Contact info: only include a <span> for fields that have a real value.`
         },
-        { role: "user", content: `Generate a professional resume: ${JSON.stringify(userData)}` }
+        {
+          role: "user",
+          content: `Build a resume from this data:\n${JSON.stringify(userData, null, 2)}`
+        }
       ]
     });
-    res.json({ result: response.choices[0].message.content });
+
+    let html = response.choices[0].message.content.trim();
+    // Safety net: strip accidental markdown fences if the model adds them anyway
+    html = html.replace(/^```html\s*/i, "").replace(/^```\s*/, "").replace(/```$/, "").trim();
+
+    res.json({ result: html });
   } catch (err) {
     res.status(500).json({ message: "Resume error", error: err.message });
   }

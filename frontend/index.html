@@ -179,23 +179,53 @@ body.dark .sidebar{background:rgba(30,41,59,.92)}
 .resume-preview{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px;line-height:1.7;font-size:13.5px}
 
 /* RESUME BUILDER DASHBOARD LAYOUT */
-.resume-dashboard{display:grid;grid-template-columns:340px 1fr 300px;gap:16px;align-items:start}
-@media(max-width:1200px){.resume-dashboard{grid-template-columns:1fr}}
-.resume-sections-col,.resume-ats-col{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
-.resume-sections-col h3,.resume-ats-col h3{font-size:15px;font-weight:800;margin-bottom:2px}
-.resume-sections-col .desc,.resume-ats-col .desc{font-size:12px;color:var(--text-light);margin-bottom:16px}
+.resume-dashboard{display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start}
+@media(max-width:1100px){.resume-dashboard{grid-template-columns:1fr}}
+.resume-sections-col{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;max-height:calc(100vh - 140px);overflow-y:auto}
+.resume-sections-col h3{font-size:15px;font-weight:800;margin-bottom:2px}
+.resume-sections-col .desc{font-size:12px;color:var(--text-light);margin-bottom:16px}
+.field-wrap{margin-bottom:12px}
+.field-wrap label{display:block;font-size:11.5px;font-weight:700;color:var(--text-light);margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
+.field-wrap textarea{width:100%;min-height:70px}
+.ats-hint{font-size:11.5px;color:var(--text-light);margin-top:10px;line-height:1.5}
+.ats-hint a{color:var(--primary);font-weight:700;cursor:pointer}
+
 .resume-preview-col{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;min-height:400px}
-.resume-preview-toolbar{display:flex;justify-content:flex-end;margin-bottom:12px}
-.resume-paper{background:#fff;color:#1a1a1a;border-radius:10px;padding:34px;min-height:500px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.resume-preview-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.template-selector{display:flex;gap:6px;background:var(--bg);border-radius:10px;padding:4px}
+.tmpl-btn{border:none;background:transparent;padding:8px 14px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--text-light);cursor:pointer;font-family:'Inter',sans-serif;transition:.2s}
+.tmpl-btn.active{background:var(--card);color:var(--primary);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.resume-paper{background:#fff;color:#1a1a1a;border-radius:10px;padding:40px 44px;min-height:500px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
 .resume-empty-state{color:#888;text-align:center;padding:60px 20px;font-size:13.5px}
-.ats-ring-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:18px}
-.ats-ring-msg{font-size:12px;font-weight:700;text-align:center;margin-top:6px}
-.ats-mini-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;color:var(--text)}
-.ats-mini-row span.val{color:var(--text-light)}
-.ats-box{background:var(--bg);border-radius:10px;padding:12px;margin-top:12px}
-.ats-box h4{font-size:12.5px;margin-bottom:8px}
-.ats-box .item{font-size:11.5px;color:var(--text-light);padding:3px 0;display:flex;gap:6px;align-items:flex-start}
-.ats-placeholder{font-size:12.5px;color:var(--text-light);text-align:center;padding:20px 0}
+
+/* Generated resume content — base structure (template-agnostic) */
+.resume-content{font-family:'Inter',sans-serif;line-height:1.6;color:#222}
+.resume-content h1{font-size:26px;font-weight:800;margin-bottom:2px}
+.resume-content .r-role{font-size:14px;font-weight:600;margin-bottom:10px}
+.resume-content .r-contact{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#555;padding-bottom:12px;margin-bottom:14px;border-bottom:2px solid #ddd}
+.resume-content h2{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin:18px 0 8px;padding-bottom:5px;border-bottom:1px solid #e5e7eb}
+.resume-content p,.resume-content li{font-size:12.5px;color:#333}
+.resume-content ul{padding-left:20px;margin-top:4px}
+.resume-content li{margin-bottom:3px}
+.resume-content strong{color:#111}
+
+/* Template: Modern */
+.tmpl-modern.resume-content h1,.tmpl-modern.resume-content .r-role{color:#7F56D9}
+.tmpl-modern.resume-content .r-contact{border-color:#7F56D9}
+.tmpl-modern.resume-content h2{color:#7F56D9;border-bottom-color:#E9D8FD}
+
+/* Template: Classic ATS (traditional, serif, black & white) */
+.tmpl-classic.resume-content{font-family:Georgia,'Times New Roman',serif}
+.tmpl-classic.resume-content h1{color:#111;letter-spacing:.4px}
+.tmpl-classic.resume-content .r-role{color:#444;font-style:italic}
+.tmpl-classic.resume-content .r-contact{border-color:#111}
+.tmpl-classic.resume-content h2{color:#111;border-bottom:2px solid #111}
+
+/* Template: Minimal */
+.tmpl-minimal.resume-content h1{color:#0F172A}
+.tmpl-minimal.resume-content .r-role{color:#64748B}
+.tmpl-minimal.resume-content .r-contact{border-color:#CBD5E1;color:#64748B}
+.tmpl-minimal.resume-content h2{color:#0F172A;border-bottom:none;background:#F1F5F9;padding:6px 10px;border-radius:6px}
 .img-result{margin-top:10px;border-radius:11px;overflow:hidden;border:1px solid var(--border)}
 .img-result img{width:100%;display:block}
 .loader{width:20px;height:20px;border:3px solid rgba(255,255,255,.3);border-top:3px solid white;border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
@@ -501,39 +531,77 @@ body.dark .streak-tip{color:#FCD34D}
         <div class="resume-sections-col">
           <h3><i class="ti ti-id-badge" style="color:var(--primary)"></i> Resume Details</h3>
           <p class="desc">Fill in your details, AI will craft the resume</p>
+
           <div class="resume-grid">
-            <input type="text" id="rName" placeholder="Full Name *">
-            <input type="text" id="rTitle" placeholder="Job Title / Role *">
-            <input type="email" id="rEmail" placeholder="Email Address">
-            <input type="text" id="rPhone" placeholder="Phone Number">
-            <input type="text" id="rLocation" placeholder="City, Country">
-            <input type="text" id="rLinkedIn" placeholder="LinkedIn URL">
+            <div class="field-wrap">
+              <label>Full Name *</label>
+              <input type="text" id="rName" placeholder="e.g. Bhawna Bhadana">
+            </div>
+            <div class="field-wrap">
+              <label>Target Role *</label>
+              <input type="text" id="rTitle" placeholder="e.g. Full Stack Developer">
+            </div>
+            <div class="field-wrap">
+              <label>Email</label>
+              <input type="email" id="rEmail" placeholder="you@email.com">
+            </div>
+            <div class="field-wrap">
+              <label>Phone</label>
+              <input type="text" id="rPhone" placeholder="+91 98765 43210">
+            </div>
+            <div class="field-wrap">
+              <label>Location</label>
+              <input type="text" id="rLocation" placeholder="City, State">
+            </div>
+            <div class="field-wrap">
+              <label>LinkedIn / GitHub</label>
+              <input type="text" id="rLinkedIn" placeholder="linkedin.com/in/yourname">
+            </div>
           </div>
-          <textarea id="rSummary" placeholder="Professional summary / About yourself..."></textarea>
-          <textarea id="rExperience" placeholder="Work experience (company, role, duration, responsibilities)..."></textarea>
-          <textarea id="rEducation" placeholder="Education (degree, institution, year)..."></textarea>
-          <textarea id="rSkills" placeholder="Skills: Python, React, Machine Learning..."></textarea>
+
+          <div class="field-wrap">
+            <label>Professional Summary</label>
+            <textarea id="rSummary" placeholder="2-3 lines about yourself: what you do, your strengths, what you're looking for."></textarea>
+          </div>
+
+          <div class="field-wrap">
+            <label>Education</label>
+            <textarea id="rEducation" placeholder="One line per entry, most recent first:&#10;B.S. Computer Applications, DSEU Delhi, 2022-2026, CGPA 8.65&#10;Class XII, Dharam Public School, 2022"></textarea>
+          </div>
+
+          <div class="field-wrap">
+            <label>Skills</label>
+            <textarea id="rSkills" placeholder="Group by category:&#10;Frontend: React, Tailwind CSS&#10;Backend: Node.js, Express.js&#10;Database: MongoDB"></textarea>
+          </div>
+
+          <div class="field-wrap">
+            <label>Experience (leave blank if none)</label>
+            <textarea id="rExperience" placeholder="Role, Company, Duration, then 2-3 bullet points of what you did:&#10;Full Stack Intern, CodeSoft, May-Jul 2024&#10;- Built REST APIs with Node.js and MongoDB"></textarea>
+          </div>
+
+          <div class="field-wrap">
+            <label>Projects / Achievements</label>
+            <textarea id="rProjects" placeholder="Project name - one line description - tech used, one per line:&#10;Nexora AI - AI study platform with chat, notes, resume builder - MERN, Groq API"></textarea>
+          </div>
+
           <button class="run-btn" id="resumeBtn" onclick="generateResume()"><i class="ti ti-wand"></i> Generate Resume</button>
+          <p class="ats-hint">Want a detailed ATS compatibility score? Use the <a onclick="showPanel('atschecker', document.querySelector('[onclick*=atschecker]'))">ATS Score Checker</a> once your resume is ready.</p>
         </div>
 
-        <!-- MIDDLE: Live preview -->
+        <!-- RIGHT: Live preview -->
         <div class="resume-preview-col">
           <div class="resume-preview-toolbar">
+            <div class="template-selector">
+              <button class="tmpl-btn active" data-tmpl="tmpl-modern" onclick="selectTemplate('tmpl-modern', this)">Modern</button>
+              <button class="tmpl-btn" data-tmpl="tmpl-classic" onclick="selectTemplate('tmpl-classic', this)">Classic ATS</button>
+              <button class="tmpl-btn" data-tmpl="tmpl-minimal" onclick="selectTemplate('tmpl-minimal', this)">Minimal</button>
+            </div>
             <button class="run-btn" id="resumeDownloadBtn" onclick="downloadResumePdf()" style="display:none;background:linear-gradient(135deg,var(--success),#059669)">
               <i class="ti ti-download"></i> Download PDF
             </button>
           </div>
           <div class="resume-paper" id="resumeStyled">
             <div class="resume-empty-state">Fill in your details on the left and click <b>Generate Resume</b> — your AI-crafted resume will appear here.</div>
-          </div>
-        </div>
-
-        <!-- RIGHT: ATS score -->
-        <div class="resume-ats-col">
-          <h3><i class="ti ti-shield-check" style="color:var(--primary)"></i> ATS Score</h3>
-          <p class="desc">Auto-scored after generating</p>
-          <div id="resumeAtsBody">
-            <p class="ats-placeholder">Generate a resume to see your ATS score</p>
           </div>
         </div>
 
