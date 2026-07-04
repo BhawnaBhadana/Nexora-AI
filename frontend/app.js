@@ -542,11 +542,13 @@ async function generateResume() {
   const name  = document.getElementById("rName").value.trim();
   const title = document.getElementById("rTitle").value.trim();
   const btn   = document.getElementById("resumeBtn");
-  const out   = document.getElementById("resumeOutput");
+  const paper = document.getElementById("resumeStyled");
   if (!name || !title) { showToast("Name and job title required", "warning"); return; }
 
   btn.disabled = true; btn.innerHTML = '<div class="loader"></div> Building...';
-  out.classList.remove("empty"); out.innerHTML = "Building resume...";
+  paper.innerHTML = '<div class="resume-empty-state">Building your resume...</div>';
+  document.getElementById('resumeDownloadBtn').style.display = 'none';
+  document.getElementById('resumeAtsBody').innerHTML = '<p class="ats-placeholder">Generate a resume to see your ATS score</p>';
 
   const userData = {
     name,
@@ -571,10 +573,78 @@ async function generateResume() {
     });
     const data = await res.json();
     if (!data.result) throw new Error("No result");
-    out.innerHTML = '<div class="resume-preview">' + data.result + "</div>";
+
+    paper.innerHTML = data.result;
+    document.getElementById('resumeDownloadBtn').style.display = 'inline-flex';
     showToast("Resume generated!", "success");
-  } catch (e) { out.textContent = "Error: " + e.message; showToast("Failed", "danger"); }
+
+    // Auto-score the generated resume against ATS rules
+    scoreGeneratedResume(paper.innerText);
+  } catch (e) {
+    paper.innerHTML = `<div class="resume-empty-state">Error: ${e.message}</div>`;
+    showToast("Failed", "danger");
+  }
   btn.disabled = false; btn.innerHTML = '<i class="ti ti-wand"></i> Generate Resume';
+}
+
+// ===== AUTO ATS SCORING FOR GENERATED RESUME =====
+async function scoreGeneratedResume(plainText) {
+  const atsBody = document.getElementById('resumeAtsBody');
+  atsBody.innerHTML = '<p class="ats-placeholder">Scoring your resume...</p>';
+  try {
+    const res = await fetch(`${BACKEND}/api/ats/score`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem("nexora-token") || ""}`
+      },
+      body: JSON.stringify({ resumeText: plainText })
+    });
+    if (!res.ok) throw new Error('Scoring failed');
+    const data = await res.json();
+    renderResumeAtsScore(data);
+  } catch (e) {
+    atsBody.innerHTML = `<p class="ats-placeholder">Couldn't score resume: ${e.message}</p>`;
+  }
+}
+
+function renderAtsRing(score) {
+  const r = 54, c = 2 * Math.PI * r;
+  const offset = c * (1 - score / 100);
+  const color = score >= 80 ? 'var(--success)' : score >= 60 ? 'var(--warning)' : 'var(--danger)';
+  return `
+  <svg width="140" height="140" viewBox="0 0 140 140">
+    <circle cx="70" cy="70" r="${r}" stroke="var(--border)" stroke-width="10" fill="none"/>
+    <circle cx="70" cy="70" r="${r}" stroke="${color}" stroke-width="10" fill="none"
+      stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${offset}"
+      transform="rotate(-90 70 70)"/>
+    <text x="70" y="66" text-anchor="middle" font-size="26" font-weight="800" fill="var(--text)">${score}</text>
+    <text x="70" y="86" text-anchor="middle" font-size="10" fill="var(--text-light)">/100</text>
+  </svg>`;
+}
+
+function renderResumeAtsScore(data) {
+  const atsBody = document.getElementById('resumeAtsBody');
+  const score = data.overallScore ?? 0;
+  const msgColor = score >= 80 ? 'var(--success)' : score >= 60 ? 'var(--warning)' : 'var(--danger)';
+  const msg = score >= 80 ? 'Excellent! ATS-friendly' : score >= 60 ? 'Good, but can improve' : 'Needs work';
+
+  const bars = Object.entries(data.breakdown || {}).map(([k, v]) => `
+    <div class="ats-mini-row"><span>${k.charAt(0).toUpperCase() + k.slice(1)}</span><span class="val">${v}%</span></div>
+  `).join('');
+
+  const strengths = (data.strengths || []).slice(0, 4).map(s => `<div class="item">✅ ${s}</div>`).join('');
+  const issues = (data.issues || []).slice(0, 4).map(s => `<div class="item">⚠️ ${s}</div>`).join('');
+
+  atsBody.innerHTML = `
+    <div class="ats-ring-wrap">
+      ${renderAtsRing(score)}
+      <div class="ats-ring-msg" style="color:${msgColor}">${msg}</div>
+    </div>
+    ${bars}
+    ${strengths ? `<div class="ats-box"><h4>What's Good</h4>${strengths}</div>` : ''}
+    ${issues ? `<div class="ats-box"><h4>Suggestions</h4>${issues}</div>` : ''}
+  `;
 }
 
 // ===== MOCK TEST =====
@@ -795,14 +865,8 @@ function renderAtsResult(data) {
 }
 
 function downloadResumePdf() {
-  // Prefer the styled version if it's visible, else fall back to plain output box
-  const styled = document.getElementById('resumeStyled');
-  const plain = document.getElementById('resumeOutput');
-  const target = (styled && styled.style.display !== 'none' && styled.innerHTML.trim())
-    ? styled
-    : plain;
-
-  if (!target || !target.innerText.trim() || plain.classList.contains('empty')) {
+  const target = document.getElementById('resumeStyled');
+  if (!target || !target.innerText.trim()) {
     showToast('Generate a resume first', 'error');
     return;
   }
@@ -816,47 +880,4 @@ function downloadResumePdf() {
   };
 
   html2pdf().set(opt).from(target).save();
-}
-
-// Call this at the end of your existing generateResume() success handler,
-// right after you populate #resumeOutput (and/or #resumeStyled):
-function showResumeDownloadBtn() {
-  document.getElementById('resumeDownloadBtn').style.display = 'inline-flex';
-}
-// Call renderStyledResume(resumeData) after your existing generateResume()
-// gets a structured JSON response back from the backend (instead of, or
-// alongside, the plain text in #resumeOutput).
-
-function renderStyledResume(data) {
-  // Expected shape: { name, title, email, phone, location, linkedin,
-  //   summary, experience: [{role, company, duration, points:[]}],
-  //   education: [{degree, institution, year}], skills: [] }
-  const styledBox = document.getElementById('resumeStyled');
-  styledBox.style.display = 'block';
-
-  const exp = (data.experience || []).map(e => `
-    <p><strong>${e.role}</strong> — ${e.company} <span style="float:right;color:#777">${e.duration}</span></p>
-    <ul>${(e.points || []).map(p => `<li>${p}</li>`).join('')}</ul>
-  `).join('');
-
-  const edu = (data.education || []).map(e => `
-    <p><strong>${e.degree}</strong>, ${e.institution} <span style="float:right;color:#777">${e.year}</span></p>
-  `).join('');
-
-  styledBox.innerHTML = `
-    <div class="resume-styled">
-      <h1>${data.name || ''}</h1>
-      <div class="r-role">${data.title || ''}</div>
-      <div class="r-contact">
-        ${data.email ? `<span><i class="ti ti-mail"></i> ${data.email}</span>` : ''}
-        ${data.phone ? `<span><i class="ti ti-phone"></i> ${data.phone}</span>` : ''}
-        ${data.location ? `<span><i class="ti ti-map-pin"></i> ${data.location}</span>` : ''}
-        ${data.linkedin ? `<span><i class="ti ti-brand-linkedin"></i> ${data.linkedin}</span>` : ''}
-      </div>
-      ${data.summary ? `<h2>Summary</h2><p>${data.summary}</p>` : ''}
-      ${exp ? `<h2>Experience</h2>${exp}` : ''}
-      ${edu ? `<h2>Education</h2>${edu}` : ''}
-      ${data.skills?.length ? `<h2>Skills</h2><p>${data.skills.join(' • ')}</p>` : ''}
-    </div>
-  `;
 }

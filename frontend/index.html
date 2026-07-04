@@ -177,6 +177,25 @@ body.dark .sidebar{background:rgba(30,41,59,.92)}
 .resume-styled p,.resume-styled li{font-size:12.5px;color:#333}
 .resume-styled ul{padding-left:18px;margin-top:4px}
 .resume-preview{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px;line-height:1.7;font-size:13.5px}
+
+/* RESUME BUILDER DASHBOARD LAYOUT */
+.resume-dashboard{display:grid;grid-template-columns:340px 1fr 300px;gap:16px;align-items:start}
+@media(max-width:1200px){.resume-dashboard{grid-template-columns:1fr}}
+.resume-sections-col,.resume-ats-col{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+.resume-sections-col h3,.resume-ats-col h3{font-size:15px;font-weight:800;margin-bottom:2px}
+.resume-sections-col .desc,.resume-ats-col .desc{font-size:12px;color:var(--text-light);margin-bottom:16px}
+.resume-preview-col{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;min-height:400px}
+.resume-preview-toolbar{display:flex;justify-content:flex-end;margin-bottom:12px}
+.resume-paper{background:#fff;color:#1a1a1a;border-radius:10px;padding:34px;min-height:500px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.resume-empty-state{color:#888;text-align:center;padding:60px 20px;font-size:13.5px}
+.ats-ring-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:18px}
+.ats-ring-msg{font-size:12px;font-weight:700;text-align:center;margin-top:6px}
+.ats-mini-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;color:var(--text)}
+.ats-mini-row span.val{color:var(--text-light)}
+.ats-box{background:var(--bg);border-radius:10px;padding:12px;margin-top:12px}
+.ats-box h4{font-size:12.5px;margin-bottom:8px}
+.ats-box .item{font-size:11.5px;color:var(--text-light);padding:3px 0;display:flex;gap:6px;align-items:flex-start}
+.ats-placeholder{font-size:12.5px;color:var(--text-light);text-align:center;padding:20px 0}
 .img-result{margin-top:10px;border-radius:11px;overflow:hidden;border:1px solid var(--border)}
 .img-result img{width:100%;display:block}
 .loader{width:20px;height:20px;border:3px solid rgba(255,255,255,.3);border-top:3px solid white;border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
@@ -476,25 +495,48 @@ body.dark .streak-tip{color:#FCD34D}
 
     <!-- RESUME -->
     <div class="panel" id="resume">
-      <div class="tool-card">
-        <h2><i class="ti ti-id-badge" style="color:var(--primary)"></i> AI Resume Builder</h2>
-        <p class="desc">Fill in your details and AI will craft a professional resume.</p>
-        <div class="resume-grid">
-          <input type="text" id="rName" placeholder="Full Name *">
-          <input type="text" id="rTitle" placeholder="Job Title / Role *">
-          <input type="email" id="rEmail" placeholder="Email Address">
-          <input type="text" id="rPhone" placeholder="Phone Number">
-          <input type="text" id="rLocation" placeholder="City, Country">
-          <input type="text" id="rLinkedIn" placeholder="LinkedIn URL">
+      <div class="resume-dashboard">
+
+        <!-- LEFT: Form -->
+        <div class="resume-sections-col">
+          <h3><i class="ti ti-id-badge" style="color:var(--primary)"></i> Resume Details</h3>
+          <p class="desc">Fill in your details, AI will craft the resume</p>
+          <div class="resume-grid">
+            <input type="text" id="rName" placeholder="Full Name *">
+            <input type="text" id="rTitle" placeholder="Job Title / Role *">
+            <input type="email" id="rEmail" placeholder="Email Address">
+            <input type="text" id="rPhone" placeholder="Phone Number">
+            <input type="text" id="rLocation" placeholder="City, Country">
+            <input type="text" id="rLinkedIn" placeholder="LinkedIn URL">
+          </div>
+          <textarea id="rSummary" placeholder="Professional summary / About yourself..."></textarea>
+          <textarea id="rExperience" placeholder="Work experience (company, role, duration, responsibilities)..."></textarea>
+          <textarea id="rEducation" placeholder="Education (degree, institution, year)..."></textarea>
+          <textarea id="rSkills" placeholder="Skills: Python, React, Machine Learning..."></textarea>
+          <button class="run-btn" id="resumeBtn" onclick="generateResume()"><i class="ti ti-wand"></i> Generate Resume</button>
         </div>
-        <textarea id="rSummary" placeholder="Professional summary / About yourself..."></textarea>
-        <textarea id="rExperience" placeholder="Work experience (company, role, duration, responsibilities)..."></textarea>
-        <textarea id="rEducation" placeholder="Education (degree, institution, year)..."></textarea>
-        <textarea id="rSkills" placeholder="Skills: Python, React, Machine Learning..."></textarea>
-        <button class="run-btn" id="resumeBtn" onclick="generateResume()"><i class="ti ti-wand"></i> Generate Resume</button>
-        <div class="output-box empty" id="resumeOutput">Your AI-crafted resume will appear here...</div>
-        <div id="resumeStyled" style="display:none"></div>
-        <button class="run-btn" id="resumeDownloadBtn" onclick="downloadResumePdf()" style="display:none;background:linear-gradient(135deg,var(--success),#059669)"><i class="ti ti-download"></i> Download PDF</button>
+
+        <!-- MIDDLE: Live preview -->
+        <div class="resume-preview-col">
+          <div class="resume-preview-toolbar">
+            <button class="run-btn" id="resumeDownloadBtn" onclick="downloadResumePdf()" style="display:none;background:linear-gradient(135deg,var(--success),#059669)">
+              <i class="ti ti-download"></i> Download PDF
+            </button>
+          </div>
+          <div class="resume-paper" id="resumeStyled">
+            <div class="resume-empty-state">Fill in your details on the left and click <b>Generate Resume</b> — your AI-crafted resume will appear here.</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: ATS score -->
+        <div class="resume-ats-col">
+          <h3><i class="ti ti-shield-check" style="color:var(--primary)"></i> ATS Score</h3>
+          <p class="desc">Auto-scored after generating</p>
+          <div id="resumeAtsBody">
+            <p class="ats-placeholder">Generate a resume to see your ATS score</p>
+          </div>
+        </div>
+
       </div>
     </div>
 
