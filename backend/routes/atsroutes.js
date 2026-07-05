@@ -1,17 +1,4 @@
-/* ============================================================
-   backend/routes/atsRoutes.js
-   ATS Score Checker route — Node/Express + Gemini API
 
-   Install deps:
-     npm install multer pdf-parse mammoth @google/generative-ai
-
-   Mount in your main server file:
-     const atsRoutes = require('./routes/atsRoutes');
-     app.use('/api/ats', atsRoutes);
-
-   Assumes you already have an `authMiddleware` like the rest
-   of your protected routes (chat, notes, resume, etc).
-   ============================================================ */
 
 const express = require('express');
 const multer = require('multer');
@@ -20,7 +7,7 @@ const mammoth = require('mammoth');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const router = express.Router();
-const authMiddleware = require('../middleware/authmiddleware'); // adjust path to match your project
+const { protect: authMiddleware } = require('../middleware/authmiddleware');
 
 const upload = multer({
   storage: multer.memoryStorage(),
