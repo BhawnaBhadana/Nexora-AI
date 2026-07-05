@@ -20,6 +20,7 @@ app.use("/api/auth", require("./routes/authroutes"));
 app.use("/api/ai", require("./routes/airoutes"));
 app.use("/api/analytics", require("./routes/analyticroutes"));
 app.use("/api/plan", require("./routes/studyplanroutes"));
+app.use("/api/ats", require("./routes/atsroutes"));
 
 app.get("/", (req, res) => res.send("Nexora AI backend running"));
 

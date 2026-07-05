@@ -20,7 +20,7 @@ const mammoth = require('mammoth');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const router = express.Router();
-const authMiddleware = require('../middleware/authMiddleware'); // adjust path to match your project
+const authMiddleware = require('../middleware/authmiddleware'); // adjust path to match your project
 
 const upload = multer({
   storage: multer.memoryStorage(),
