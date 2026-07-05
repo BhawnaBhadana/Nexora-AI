@@ -95,7 +95,7 @@ router.post('/score', authMiddleware, upload.single('resumeFile'), async (req, r
       .replace('{{RESUME_TEXT}}', resumeText)
       .replace('{{JOB_DESC_BLOCK}}', jobDescBlock);
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     const result = await model.generateContent(prompt);
     let raw = result.response.text().trim();
 
