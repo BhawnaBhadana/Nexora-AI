@@ -3,7 +3,7 @@ const router = express.Router();
 const OpenAI = require("openai");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const multer = require("multer");
-const pdfParse = require("pdf-parse");
+const { PDFParse } = require("pdf-parse");
 
 // ─── Clients ───────────────────────────────────────────────────────────────
 const deepseek = new OpenAI({
@@ -194,7 +194,8 @@ STRICT RULES:
 router.post("/pdf", upload.single("pdf"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: "No PDF uploaded" });
-    const pdfData = await pdfParse(req.file.buffer);
+    const parser = new PDFParse({ data: req.file.buffer });
+    const pdfData = await parser.getText();
     const text = pdfData.text.slice(0, 4000);
 
     const response = await deepseek.chat.completions.create({
@@ -223,7 +224,7 @@ router.post("/pdf", upload.single("pdf"), async (req, res) => {
         { role: "user", content: `Analyze this PDF content: ${text}` }
       ]
     });
-    res.json({ result: response.choices[0].message.content, pages: pdfData.numpages });
+    res.json({ result: response.choices[0].message.content, pages: pdfData.total });
   } catch (err) {
     res.status(500).json({ message: "PDF error", error: err.message });
   }

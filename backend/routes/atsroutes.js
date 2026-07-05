@@ -2,7 +2,7 @@
 
 const express = require('express');
 const multer = require('multer');
-const pdfParse = require('pdf-parse');
+const { PDFParse } = require('pdf-parse');
 const mammoth = require('mammoth');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
@@ -26,8 +26,9 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function extractTextFromFile(file) {
   if (file.mimetype === 'application/pdf') {
-    const data = await pdfParse(file.buffer);
-    return data.text;
+    const parser = new PDFParse({ data: file.buffer });
+    const result = await parser.getText();
+    return result.text;
   }
   if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
     const result = await mammoth.extractRawText({ buffer: file.buffer });
