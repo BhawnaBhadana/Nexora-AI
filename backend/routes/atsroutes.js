@@ -1,10 +1,9 @@
 
-
 const express = require('express');
 const multer = require('multer');
 const { PDFParse } = require('pdf-parse');
 const mammoth = require('mammoth');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const OpenAI = require('openai');
 
 const router = express.Router();
 const { protect: authMiddleware } = require('../middleware/authmiddleware');
@@ -22,7 +21,10 @@ const upload = multer({
   }
 });
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const deepseek = new OpenAI({
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: 'https://api.deepseek.com'
+});
 
 async function extractTextFromFile(file) {
   if (file.mimetype === 'application/pdf') {
@@ -95,9 +97,16 @@ router.post('/score', authMiddleware, upload.single('resumeFile'), async (req, r
       .replace('{{RESUME_TEXT}}', resumeText)
       .replace('{{JOB_DESC_BLOCK}}', jobDescBlock);
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    const result = await model.generateContent(prompt);
-    let raw = result.response.text().trim();
+    const response = await deepseek.chat.completions.create({
+      model: 'deepseek-chat',
+      max_tokens: 1200,
+      temperature: 0.3,
+      messages: [
+        { role: 'system', content: 'You are an expert ATS (Applicant Tracking System) resume auditor. Always return ONLY valid JSON, no markdown fences, no preamble.' },
+        { role: 'user', content: prompt }
+      ]
+    });
+    let raw = response.choices[0].message.content.trim();
 
     // Strip accidental markdown fences
     raw = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
