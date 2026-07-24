@@ -3,22 +3,24 @@ const router = express.Router();
 const OpenAI = require("openai");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const multer = require("multer");
-const { PDFParse } = require("pdf-parse");
+const pdfParse = require("pdf-parse");
 
 // ─── Clients ───────────────────────────────────────────────────────────────
-const deepseek = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com"
+const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: "https://api.groq.com/openai/v1"
 });
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
-// ─── DEEPSEEK: Text Chat (non-streaming) ──────────────────────────────────
+const GROQ_MODEL = "llama-3.3-70b-versatile";
+
+// ─── GROQ: Text Chat (non-streaming) ──────────────────────────────────────
 router.post("/ask", async (req, res) => {
   try {
     const { system, message } = req.body;
-    const response = await deepseek.chat.completions.create({
-      model: "deepseek-chat",
+    const response = await groq.chat.completions.create({
+      model: GROQ_MODEL,
       max_tokens: 1500,
       messages: [
         { role: "system", content: system },
@@ -31,7 +33,7 @@ router.post("/ask", async (req, res) => {
   }
 });
 
-// ─── DEEPSEEK: Text Chat (streaming) ──────────────────────────────────────
+// ─── GROQ: Text Chat (streaming) ──────────────────────────────────────────
 router.post("/stream", async (req, res) => {
   try {
     const { system, message } = req.body;
@@ -40,8 +42,8 @@ router.post("/stream", async (req, res) => {
     res.setHeader("Connection", "keep-alive");
     res.setHeader("Access-Control-Allow-Origin", "*");
 
-    const stream = await deepseek.chat.completions.create({
-      model: "deepseek-chat",
+    const stream = await groq.chat.completions.create({
+      model: GROQ_MODEL,
       max_tokens: 1500,
       stream: true,
       messages: [
@@ -122,13 +124,13 @@ router.post("/generate-image", async (req, res) => {
   }
 });
 
-// ─── DEEPSEEK: Resume Builder ──────────────────────────────────────────────
+// ─── GROQ: Resume Builder ──────────────────────────────────────────────────
 router.post("/resume", async (req, res) => {
   try {
     const { userData } = req.body;
 
-    const response = await deepseek.chat.completions.create({
-      model: "deepseek-chat",
+    const response = await groq.chat.completions.create({
+      model: GROQ_MODEL,
       max_tokens: 1800,
       temperature: 0.4,
       messages: [
@@ -149,12 +151,11 @@ Return ONLY valid HTML using EXACTLY this structure and these class names. No in
   <span>linkedin</span>
 </div>
 <h2>Professional Summary</h2>
-<p>2-3 sentence summary tailored to the target role. Write this yourself in professional language even if the input summary is rough or missing — infer it from their skills/education.</p>
+<p>2-3 sentence summary tailored to the target role.</p>
 <h2>Education</h2>
 <p><strong>Degree</strong>, Institution — Year<br>CGPA/details if given</p>
-(repeat the above <p> block per education entry, most recent first)
 <h2>Skills</h2>
-<p>Group logically by category, e.g. <strong>Frontend:</strong> React, Tailwind CSS. Do not just dump a raw comma list if categories are obvious from context.</p>
+<p>Group logically by category, e.g. <strong>Frontend:</strong> React, Tailwind CSS.</p>
 <h2>Projects</h2>
 <ul>
 <li><strong>Project Name</strong> — one clear line describing what it does. Tech: stack used.</li>
@@ -162,14 +163,12 @@ Return ONLY valid HTML using EXACTLY this structure and these class names. No in
 <h2>Experience</h2>
 <p><strong>Role</strong>, Company — Duration</p>
 <ul><li>One bullet per responsibility/achievement, action-verb first, quantify where possible.</li></ul>
-(repeat per experience entry; omit this entire section if no experience was given — do not invent fake experience)
 <h2>Achievements</h2>
 <ul><li>One line per achievement</li></ul>
 
 STRICT RULES:
 - Never duplicate a section or repeat the same line twice.
-- Never leave a field's raw placeholder-like text (e.g. stray words, unrelated fragments) in the output — if a field's content doesn't make sense for its section, omit that line rather than including garbage.
-- Skip any section entirely (including its <h2>) if there is truly no usable data for it — never fabricate degrees, companies, or dates that weren't provided.
+- Skip any section entirely (including its <h2>) if there is truly no usable data for it.
 - Keep everything ATS-friendly: no tables, no icons, no images, no multi-column layouts.
 - Contact info: only include a <span> for fields that have a real value.`
         },
@@ -181,7 +180,6 @@ STRICT RULES:
     });
 
     let html = response.choices[0].message.content.trim();
-    // Safety net: strip accidental markdown fences if the model adds them anyway
     html = html.replace(/^```html\s*/i, "").replace(/^```\s*/, "").replace(/```$/, "").trim();
 
     res.json({ result: html });
@@ -190,41 +188,41 @@ STRICT RULES:
   }
 });
 
-// ─── DEEPSEEK: PDF Analyzer ────────────────────────────────────────────────
+// ─── GROQ: PDF Analyzer ────────────────────────────────────────────────────
 router.post("/pdf", upload.single("pdf"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: "No PDF uploaded" });
-    const parser = new PDFParse({ data: req.file.buffer });
-    const pdfData = await parser.getText();
+
+    const pdfData = await pdfParse(req.file.buffer);
     const text = pdfData.text.slice(0, 4000);
 
-    const response = await deepseek.chat.completions.create({
-      model: "deepseek-chat",
+    const response = await groq.chat.completions.create({
+      model: GROQ_MODEL,
       max_tokens: 2000,
       messages: [
         {
           role: "system",
           content: `You are Nexora AI PDF analyzer for Indian college students.
-          Analyze the provided PDF text and:
-          1. Give a clear summary
-          2. List key concepts
-          3. Generate 5 practice questions
-          Format EXACTLY:
-          SUMMARY:
-          [2-3 line summary]
-          KEY CONCEPTS:
-          [bullet points of main concepts]
-          PRACTICE QUESTIONS:
-          Q1: [question]
-          Q2: [question]
-          Q3: [question]
-          Q4: [question]
-          Q5: [question]`
+Analyze the provided PDF text and:
+1. Give a clear summary
+2. List key concepts
+3. Generate 5 practice questions
+Format EXACTLY:
+SUMMARY:
+[2-3 line summary]
+KEY CONCEPTS:
+[bullet points of main concepts]
+PRACTICE QUESTIONS:
+Q1: [question]
+Q2: [question]
+Q3: [question]
+Q4: [question]
+Q5: [question]`
         },
         { role: "user", content: `Analyze this PDF content: ${text}` }
       ]
     });
-    res.json({ result: response.choices[0].message.content, pages: pdfData.total });
+    res.json({ result: response.choices[0].message.content, pages: pdfData.numpages });
   } catch (err) {
     res.status(500).json({ message: "PDF error", error: err.message });
   }
